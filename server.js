@@ -196,7 +196,8 @@ app.get('/api/result/:id', (req, res) => {
   }
 });
 
-// ===== 5. 啟動 =====
-app.listen(3000, () => {
-  console.log('✅ 小桃魔女啟動 → http://localhost:3000');
+// ===== 5. 啟動（支援 Render 動態端口） =====
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`✅ 小桃魔女啟動，運行在端口 ${port}`);
 });
