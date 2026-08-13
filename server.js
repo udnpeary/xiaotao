@@ -25,66 +25,15 @@ const client = new OpenAI({
 
 const resultStore = {};
 
-// ===== 時辰轉換表 =====
-function getTimeIndex(birthTime) {
-  const timeMap = {
-    '子時': 0, '丑時': 1, '寅時': 2, '卯時': 3,
-    '辰時': 4, '巳時': 5, '午時': 6, '未時': 7,
-    '申時': 8, '酉時': 9, '戌時': 10, '亥時': 11
-  };
-  for (const [key, value] of Object.entries(timeMap)) {
-    if (birthTime.includes(key)) {
-      return value;
-    }
-  }
-  return 4; // 預設辰時
-}
-
-// ===== 1. 呼叫公開排盤 API =====
+// ===== 1. 模擬排盤（當外部 API 不可用時） =====
 async function getBaziChart(birthDate, birthTime, birthPlace) {
-  const [year, month, day] = birthDate.split('-').map(Number);
-  const timeIndex = getTimeIndex(birthTime);
-
-  const url = `https://aov.cc/api/v1/bazi/calculate`;
-
-  const requestBody = {
-    year: year,
-    month: month,
-    day: day,
-    timeIndex: timeIndex,
-    dateType: 'solar',
-    gender: 'male',
-    city: birthPlace || '台灣省'
+  console.log('⚠️ 排盤 API 目前不可用，將由 DeepSeek 直接推算八字');
+  return {
+    _source: 'deepseek-generated',
+    birthDate: birthDate,
+    birthTime: birthTime,
+    birthPlace: birthPlace
   };
-
-  console.log(`⏳ 正在呼叫排盤 API: ${url}`);
-  console.log(`📤 請求參數:`, JSON.stringify(requestBody));
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody),
-    signal: AbortSignal.timeout(15000)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`排盤 API 請求失敗 (${response.status}): ${errorText}`);
-  }
-
-  const data = await response.json();
-
-  if (data.ok === true && data.data) {
-    return data.data;
-  }
-
-  if (data.year && data.month && data.day) {
-    return data;
-  }
-
-  throw new Error(`排盤 API 回傳異常: ${JSON.stringify(data)}`);
 }
 
 // ===== 2. 算命 API =====
@@ -96,9 +45,9 @@ app.post('/api/fortune', async (req, res) => {
   }
 
   try {
-    console.log(`⏳ 正在為 ${birthDate} ${birthTime} 排盤...`);
+    console.log(`⏳ 正在為 ${birthDate} ${birthTime} 推演命盤...`);
     const baziData = await getBaziChart(birthDate, birthTime, birthPlace);
-    console.log('✅ 排盤成功，準備讓 AI 解盤');
+    console.log('✅ 模擬命盤完成，準備讓 AI 解盤');
 
     const completion = await client.chat.completions.create({
       model: 'deepseek-chat',
@@ -107,11 +56,64 @@ app.post('/api/fortune', async (req, res) => {
           role: 'system',
           content: `
 你是一位精通八字命理的老師，代號「小桃魔女」。
-以下是使用者的完整八字命盤數據（JSON 格式）：
-${JSON.stringify(baziData, null, 2)}
 
-請根據這份**真實的命盤數據**來解盤，不要自己憑空編造。
-回傳 **純 JSON**，格式如下：
+請根據使用者的出生日期、時辰、地點，**按照以下步驟嚴格推算八字**，不要跳步或憑空編造。
+
+---
+
+### 第一步：換算農曆（年柱、月柱、日柱）
+1. 將公曆生日換算成農曆（請用你內建的曆法知識）。
+2. **年柱**：以「立春」為分界。若生日在立春前，則年柱為前一年；若在立春後，則為該年。
+3. **月柱**：以「節氣」為分界（每月以「節」為準，非「氣」）：
+   - 寅月：立春 ~ 驚蟄
+   - 卯月：驚蟄 ~ 清明
+   - 辰月：清明 ~ 立夏
+   - 巳月：立夏 ~ 芒種
+   - 午月：芒種 ~ 小暑
+   - 未月：小暑 ~ 立秋
+   - 申月：立秋 ~ 白露
+   - 酉月：白露 ~ 寒露
+   - 戌月：寒露 ~ 立冬
+   - 亥月：立冬 ~ 大雪
+   - 子月：大雪 ~ 小寒
+   - 丑月：小寒 ~ 立春
+4. **日柱**：根據農曆日期，查找對應的干支（可用你內建的知識推算）。
+5. **時柱**：根據時辰對照表：
+   - 子時 (23:00-00:59) → 子
+   - 丑時 (01:00-02:59) → 丑
+   - 寅時 (03:00-04:59) → 寅
+   - 卯時 (05:00-06:59) → 卯
+   - 辰時 (07:00-08:59) → 辰
+   - 巳時 (09:00-10:59) → 巳
+   - 午時 (11:00-12:59) → 午
+   - 未時 (13:00-14:59) → 未
+   - 申時 (15:00-16:59) → 申
+   - 酉時 (17:00-18:59) → 酉
+   - 戌時 (19:00-20:59) → 戌
+   - 亥時 (21:00-22:59) → 亥
+
+---
+
+### 第二步：排出四柱八字
+完整寫出年柱、月柱、日柱、時柱的**天干地支**（例如：甲子、丙寅、戊辰、庚午）。
+
+---
+
+### 第三步：定日主
+- 日柱的**天干**即為「日主」（命主本人）。
+- 請寫出日主對應的五行（甲、乙 → 木；丙、丁 → 火；戊、己 → 土；庚、辛 → 金；壬、癸 → 水）。
+
+---
+
+### 第四步：分析五行生剋
+1. 列出八字中所有天干地支的五行（包含藏干，如地支中的餘氣）。
+2. 計算五行強弱（月令對日主的影響最大）。
+3. 根據「扶抑、通關、調候」原則，判斷日主的身強或身弱，並決定**喜用神**（對命主最有利的五行）。
+
+---
+
+### 第五步：輸出結果
+請回傳 **純 JSON**，格式如下：
 {
   "dayMaster": "日主五行（例如：甲木）",
   "favorable": "喜用神（例如：喜金、水）",
@@ -119,14 +121,21 @@ ${JSON.stringify(baziData, null, 2)}
   "title": "根據命盤給一個江湖稱號（例如：烈火戰神）",
   "crystal": "根據喜用神推薦一種水晶，並說明原因"
 }
+
+---
+
+### 重要提醒
+- 務必依照上述步驟推算，確保結果有邏輯依據。
+- 不要編造，不要使用模糊語言。
+- 如果資訊不足，請合理推斷並註明。
 `
         },
         {
           role: 'user',
-          content: `請根據上面提供的八字命盤數據，為這位使用者解盤。`
+          content: `出生日期：${birthDate}，時辰：${birthTime}，地點：${birthPlace}。請按照上述步驟推算八字並解盤。`
         }
       ],
-      temperature: 0.7,
+      temperature: 0.5, // 降低溫度，讓 AI 更嚴謹
     });
 
     let content = completion.choices[0].message.content;
@@ -135,9 +144,7 @@ ${JSON.stringify(baziData, null, 2)}
     res.json(result);
 
   } catch (error) {
-    console.error('排盤或解盤失敗：', error);
-
-    // 備用方案
+    console.error('解盤失敗：', error);
     const fallbackResult = getFallbackResult(birthDate);
     res.json(fallbackResult);
   }
