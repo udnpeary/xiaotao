@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>小桃說好命</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: #ffffff;
+      font-family: -apple-system, 'Helvetica Neue', 'PingFang TC', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 60px;
+      background: transparent;
+    }
+    .left {
+      flex: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .video-wrapper {
+      width: 100%;
+      max-width: 700px;
+      aspect-ratio: 1 / 1;
+      background: #fafafa;
+      overflow: hidden;
+      border-radius: 0;
+    }
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 0;
+    }
+    .title {
+      font-size: 48px;
+      font-weight: 700;
+      color: #1d1d1f;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .sub {
+      font-size: 20px;
+      font-weight: 400;
+      color: #86868b;
+      letter-spacing: 1px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #d2d2d6;
+      padding-bottom: 20px;
+    }
+
+    /* 輸入區塊（會隱藏） */
+    .input-area {
+      display: block;
+    }
+    .input-group {
+      margin-bottom: 18px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1d1d1f;
+      margin-bottom: 6px;
+    }
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 18px;
+      border: 1px solid #d2d2d6;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #1d1d1f;
+      outline: none;
+      transition: border 0.2s;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #c94a7a;
+      box-shadow: 0 0 0 2px rgba(201, 74, 122, 0.1);
+    }
+    .input-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2386868b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 20px center;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px 24px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      background: #c94a7a;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .btn:hover {
+      background: #b03a6a;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      transform: scale(1);
+    }
+
+    .status {
+      font-size: 17px;
+      color: #86868b;
+      text-align: center;
+      padding: 12px 0;
+      border-top: 1px solid #d2d2d6;
+      border-bottom: 1px solid #d2d2d6;
+      margin-bottom: 20px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== 結果卡片（稱號置頂） ===== */
+    .result {
+      display: none;
+      margin-top: 8px;
+    }
+    .result.show {
+      display: block;
+      animation: fadeUp 0.4s ease;
+    }
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-title {
+      text-align: center;
+      padding: 16px 0 20px 0;
+      border-bottom: 2px solid #f0e8ea;
+      margin-bottom: 16px;
+    }
+    .result-label-small {
+      font-size: 14px;
+      color: #b097a0;
+      letter-spacing: 4px;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+    .result-title-value {
+      font-size: 40px;
+      font-weight: 700;
+      color: #c94a7a;
+      letter-spacing: 3px;
+      line-height: 1.2;
+    }
+
+    .result-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e5ea;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-label {
+      font-weight: 600;
+      color: #1d1d1f;
+      width: 80px;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .result-value {
+      color: #3a3a3c;
+      font-size: 16px;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .qr-section {
+      margin: 20px 0 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .qr-section p {
+      font-size: 14px;
+      color: #86868b;
+      margin-bottom: 8px;
+    }
+    #qrcode {
+      padding: 8px;
+      background: #ffffff;
+      display: inline-block;
+      border-radius: 8px;
+      border: 1px solid #e5e5ea;
+    }
+
+    .btn-reset {
+      background: #86868b;
+      box-shadow: none;
+      margin-top: 12px;
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-reset:hover {
+      background: #6e6e73;
+    }
+
+    /* ===== 全螢幕施法 ===== */
+    #spellOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    #spellOverlay.active {
+      display: flex;
+    }
+    #spellOverlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .spell-hint {
+      position: absolute;
+      bottom: 60px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 16px;
+      letter-spacing: 4px;
+    }
+
+    /* ===== 音樂控制 ===== */
+    .music-control {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 40px;
+      padding: 8px 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      font-size: 14px;
+      color: #1d1d1f;
+      border: 1px solid #e5e5ea;
+      user-select: none;
+    }
+    .music-control:hover {
+      background: #ffffff;
+    }
+
+    /* ===== 手機版 ===== */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      .container {
+        flex-direction: column;
+        gap: 30px;
+      }
+      .left {
+        flex: none;
+        width: 100%;
+      }
+      .video-wrapper {
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .right {
+        width: 100%;
+      }
+      .title {
+        font-size: 36px;
+        text-align: center;
+      }
+      .sub {
+        text-align: center;
+      }
+      .result-item {
+        gap: 12px;
+      }
+      .result-label {
+        width: 70px;
+        font-size: 14px;
+      }
+      .result-title-value {
+        font-size: 32px;
+      }
+    }
+    @media (max-width: 480px) {
+      .title {
+        font-size: 28px;
+      }
+      .btn {
+        font-size: 18px;
+        padding: 16px;
+      }
+      .video-wrapper {
+        max-width: 300px;
+      }
+      .result-label {
+        width: 60px;
+      }
+      .result-title-value {
+        font-size: 28px;
+      }
+    }
+
+    /* 隱藏輔助類 */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 全螢幕施法 -->
+  <div id="spellOverlay">
+    <video id="spellVideoFull" playsinline>
+      <source src="spell.mp4" type="video/mp4" />
+    </video>
+    <div class="spell-hint">✦ 小桃正在為你推演命盤 ✦</div>
+  </div>
+
+  <!-- 背景音樂 -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="bg-music.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- 音樂控制 -->
+  <div class="music-control" id="musicToggle">🔇 音樂</div>
+
+  <!-- 主內容 -->
+  <div class="container">
+    <div class="left">
+      <div class="video-wrapper">
+        <video id="idleVideo" muted playsinline autoplay loop>
+          <source src="idle.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="title">小桃說好命</div>
+      <div class="sub">八字・水晶・東方命理</div>
+
+      <!-- ===== 輸入區域（將在結果出現後隱藏） ===== -->
+      <div id="inputArea">
+        <div class="input-group">
+          <label for="birthday">出生日期（公曆）</label>
+          <input type="date" id="birthday" max="2016-01-01" value="2000-01-01" />
+        </div>
+
+        <div class="input-group">
+          <label for="birthTime">出生時辰</label>
+          <select id="birthTime">
+            <option value="子時 (23:00-00:59)">子時 (23:00-00:59)</option>
+            <option value="丑時 (01:00-02:59)">丑時 (01:00-02:59)</option>
+            <option value="寅時 (03:00-04:59)">寅時 (03:00-04:59)</option>
+            <option value="卯時 (05:00-06:59)">卯時 (05:00-06:59)</option>
+            <option value="辰時 (07:00-08:59)" selected>辰時 (07:00-08:59)</option>
+            <option value="巳時 (09:00-10:59)">巳時 (09:00-10:59)</option>
+            <option value="午時 (11:00-12:59)">午時 (11:00-12:59)</option>
+            <option value="未時 (13:00-14:59)">未時 (13:00-14:59)</option>
+            <option value="申時 (15:00-16:59)">申時 (15:00-16:59)</option>
+            <option value="酉時 (17:00-18:59)">酉時 (17:00-18:59)</option>
+            <option value="戌時 (19:00-20:59)">戌時 (19:00-20:59)</option>
+            <option value="亥時 (21:00-22:59)">亥時 (21:00-22:59)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="birthPlace">出生地點</label>
+          <select id="birthPlace">
+            <option value="台灣省" selected>台灣省</option>
+            <option value="北京市">北京市</option>
+            <option value="上海市">上海市</option>
+            <option value="廣東省">廣東省</option>
+            <option value="福建省">福建省</option>
+            <option value="香港特別行政區">香港特別行政區</option>
+            <option value="澳門特別行政區">澳門特別行政區</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+
+        <button class="btn" id="calcBtn">開始算命</button>
+        <div class="status" id="statusText">選好日期、時辰與地點，召喚小桃</div>
+      </div>
+
+      <!-- ===== 結果卡片 ===== -->
+      <div class="result" id="resultCard">
+        <div class="result-title">
+          <div class="result-label-small">✦ 專屬稱號 ✦</div>
+          <div class="result-title-value" id="rTitle">—</div>
+        </div>
+
+        <div class="result-item">
+          <span class="result-label">日主五行</span>
+          <span class="result-value" id="rDayMaster">-</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">喜用神</span>
+          <span class="result-value" id="rFavorable">-</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">個性</span>
+          <span class="result-value" id="rPersonality">-</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">幸運水晶</span>
+          <span class="result-value" id="rCrystal">-</span>
+        </div>
+
+        <div class="qr-section">
+          <p>📱 掃碼儲存命盤</p>
+          <div id="qrcode"></div>
+        </div>
+
+        <button class="btn-reset" id="resetBtn">重新算命</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== DOM =====
+    const idleVideo = document.getElementById('idleVideo');
+    const spellVideoFull = document.getElementById('spellVideoFull');
+    const spellOverlay = document.getElementById('spellOverlay');
+    const birthdayInput = document.getElementById('birthday');
+    const birthTimeSelect = document.getElementById('birthTime');
+    const birthPlaceSelect = document.getElementById('birthPlace');
+    const calcBtn = document.getElementById('calcBtn');
+    const statusText = document.getElementById('statusText');
+    const resultCard = document.getElementById('resultCard');
+    const resetBtn = document.getElementById('resetBtn');
+    const inputArea = document.getElementById('inputArea');
+
+    const rDayMaster = document.getElementById('rDayMaster');
+    const rFavorable = document.getElementById('rFavorable');
+    const rPersonality = document.getElementById('rPersonality');
+    const rTitle = document.getElementById('rTitle');
+    const rCrystal = document.getElementById('rCrystal');
+
+    // ===== 音樂控制 =====
+    const bgMusic = document.getElementById('bgMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    let musicOn = false;
+    let audioCtx = null;
+    let gainNode = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtx.createMediaElementSource(bgMusic);
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.5;
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+      }
+    }
+
+    musicToggle.addEventListener('click', () => {
+      if (!audioCtx) initAudio();
+
+      if (musicOn) {
+        bgMusic.pause();
+        musicToggle.textContent = '🔇 音樂';
+      } else {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        bgMusic.play().catch(() => {});
+        musicToggle.textContent = '🔊 音樂';
+      }
+      musicOn = !musicOn;
+    });
+
+    document.addEventListener('click', () => {
+      if (!audioCtx) initAudio();
+    }, { once: true });
+
+    // ===== 核心邏輯 =====
+    async function fetchFortune(birthDate, birthTime, birthPlace) {
+      try {
+        const res = await fetch('/api/fortune', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ birthDate, birthTime, birthPlace }),
+        });
+        if (!res.ok) throw new Error('伺服器錯誤');
+        return await res.json();
+      } catch (error) {
+        console.warn('API 連線失敗，啟用離線備用');
+        return {
+          dayMaster: '乙木',
+          favorable: '喜水、木',
+          personality: '溫柔善良，喜歡幫助別人，像春風一樣溫暖',
+          title: '春風仙子',
+          crystal: '粉晶，屬水木，能增強你的人緣與柔和能量'
+        };
+      }
+    }
+
+    async function saveResult(data) {
+      const res = await fetch('/api/save-result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      return json.id;
+    }
+
+    async function startDivination() {
+      const birthDate = birthdayInput.value;
+      const birthTime = birthTimeSelect.value;
+      const birthPlace = birthPlaceSelect.value;
+
+      if (!birthDate) {
+        statusText.textContent = '請選擇出生日期';
+        return;
+      }
+
+      // 隱藏輸入區（但先不要，等結果出來再隱藏）
+      // 鎖定按鈕
+      calcBtn.disabled = true;
+      calcBtn.textContent = '施法中...';
+      statusText.textContent = '小桃正在施法，請稍候';
+      resultCard.classList.remove('show');
+
+      // 全螢幕施法
+      spellOverlay.classList.add('active');
+      spellVideoFull.muted = false;
+      spellVideoFull.volume = 1.0;
+      spellVideoFull.currentTime = 0;
+      spellVideoFull.play().catch(() => {});
+
+      if (musicOn) bgMusic.pause();
+
+      const fortune = await fetchFortune(birthDate, birthTime, birthPlace);
+
+      await new Promise((resolve) => {
+        const onEnd = () => {
+          spellVideoFull.removeEventListener('ended', onEnd);
+          resolve();
+        };
+        spellVideoFull.addEventListener('ended', onEnd);
+        setTimeout(() => {
+          spellVideoFull.removeEventListener('ended', onEnd);
+          resolve();
+        }, 11000);
+      });
+
+      spellOverlay.classList.remove('active');
+      spellVideoFull.pause();
+      if (musicOn) bgMusic.play().catch(() => {});
+
+      // 顯示結果
+      rTitle.textContent = fortune.title || '無名俠客';
+      rDayMaster.textContent = fortune.dayMaster || '未知';
+      rFavorable.textContent = fortune.favorable || '未知';
+      rPersonality.textContent = fortune.personality || '你是個獨特的人';
+      rCrystal.textContent = fortune.crystal || '粉晶';
+
+      resultCard.classList.add('show');
+      statusText.textContent = '✨ 算命完成！';
+
+      // ---- 隱藏輸入區、按鈕、狀態 ----
+      inputArea.style.display = 'none';
+
+      // QR Code
+      const resultData = {
+        dayMaster: fortune.dayMaster,
+        favorable: fortune.favorable,
+        personality: fortune.personality,
+        title: fortune.title,
+        crystal: fortune.crystal
+      };
+      const id = await saveResult(resultData);
+      const qrUrl = `${window.location.origin}/result.html?id=${id}`;
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: qrUrl,
+        width: 120,
+        height: 120,
+        colorDark: '#1d1d1f',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      calcBtn.disabled = false;
+      calcBtn.textContent = '開始算命';
+    }
+
+    // ===== 重新算命 =====
+    resetBtn.addEventListener('click', () => {
+      resultCard.classList.remove('show');
+      document.getElementById('qrcode').innerHTML = '';
+      // 恢復輸入區
+      inputArea.style.display = '';
+      statusText.textContent = '選好日期、時辰與地點，召喚小桃';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ===== 綁定 =====
+    calcBtn.addEventListener('click', startDivination);
+
+    window.addEventListener('load', () => {
+      idleVideo.play().catch(() => {});
+      const today = new Date();
+      const year = today.getFullYear() - 18;
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      birthdayInput.value = `${year}-${month}-${day}`;
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>命盤小卡</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #f5f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, 'PingFang TC', sans-serif;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 360px;  /* 3:4 比例，寬高比 3:4 */
+      aspect-ratio: 3 / 4;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid #f0e8ea;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, #fce4ec 0%, transparent 70%);
+      border-radius: 50%;
+      opacity: 0.4;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #c94a7a;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #fce4ec;
+      padding-bottom: 12px;
+      text-align: center;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3e8ea;
+      font-size: 16px;
+      color: #1d1d1f;
+    }
+    .item:last-child { border-bottom: none; }
+    .label { font-weight: 600; color: #7a5a6a; }
+    .value { text-align: right; flex: 1; margin-left: 16px; color: #3a2c33; }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #b097a0;
+      letter-spacing: 2px;
+      border-top: 1px solid #f3e8ea;
+      padding-top: 16px;
+    }
+    .loading {
+      text-align: center;
+      color: #86868b;
+      font-size: 18px;
+    }
+    .error {
+      text-align: center;
+      color: #c94a7a;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="loading" id="loading">載入命盤中...</div>
+</div>
+
+<script>
+  // 從 URL 取得 id
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  async function loadResult() {
+    if (!id) {
+      document.getElementById('card').innerHTML = '<div class="error">❌ 無效的命盤</div>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/result/${id}`);
+      if (!res.ok) throw new Error('找不到');
+      const data = await res.json();
+
+      document.getElementById('card').innerHTML = `
+        <div class="title">✦ 小桃說好命 ✦</div>
+        <div class="item"><span class="label">日主五行</span><span class="value">${data.dayMaster || '未知'}</span></div>
+        <div class="item"><span class="label">喜用神</span><span class="value">${data.favorable || '未知'}</span></div>
+        <div class="item"><span class="label">個性</span><span class="value">${data.personality || '—'}</span></div>
+        <div class="item"><span class="label">專屬稱號</span><span class="value">${data.title || '—'}</span></div>
+        <div class="item"><span class="label">幸運水晶</span><span class="value">${data.crystal || '—'}</span></div>
+        <div class="footer">— 掃描存檔 · 僅供參考 —</div>
+      `;
+    } catch (e) {
+      document.getElementById('card').innerHTML = '<div class="error">❌ 命盤已過期或不存在</div>';
+    }
+  }
+
+  loadResult();
+</script>
+</body>
+</html>
