@@ -27,19 +27,20 @@
       width: 100%;
       display: flex;
       flex-direction: row;
-      align-items: center;
-      gap: 60px;
+      align-items: stretch;
+      gap: 50px;
       background: transparent;
     }
     .left {
-      flex: 2;
+      flex: 1.5;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
     }
     .video-wrapper {
       width: 100%;
-      max-width: 700px;
+      max-width: 600px;
       aspect-ratio: 1 / 1;
       background: #fafafa;
       overflow: hidden;
@@ -53,49 +54,51 @@
     }
 
     .right {
-      flex: 1;
+      flex: 1.2;
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: 10px 0;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .title {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 700;
       color: #1d1d1f;
       letter-spacing: 2px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .sub {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 400;
       color: #86868b;
       letter-spacing: 1px;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
       border-bottom: 1px solid #d2d2d6;
-      padding-bottom: 20px;
+      padding-bottom: 16px;
     }
 
     .input-area {
       display: block;
     }
     .input-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .input-group label {
       display: block;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 500;
       color: #1d1d1f;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
     .input-group input,
     .input-group select {
       width: 100%;
-      padding: 14px 18px;
-      font-size: 17px;
+      padding: 12px 16px;
+      font-size: 16px;
       border: 1px solid #d2d2d6;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #ffffff;
       color: #1d1d1f;
       outline: none;
@@ -112,17 +115,19 @@
     .input-group select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2386868b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 18px center;
+      background-position: right 16px center;
     }
-    /* 分組標題樣式 */
-    .input-group optgroup {
-      font-weight: 600;
-      color: #1d1d1f;
+    .input-row {
+      display: flex;
+      gap: 14px;
+    }
+    .input-row .input-group {
+      flex: 1;
     }
 
     .btn {
       width: 100%;
-      padding: 18px 24px;
+      padding: 16px 20px;
       font-size: 20px;
       font-weight: 600;
       color: #ffffff;
@@ -132,7 +137,7 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       letter-spacing: 1px;
-      margin-bottom: 18px;
+      margin: 6px 0 14px 0;
     }
     .btn:hover {
       background: #b03a6a;
@@ -147,23 +152,26 @@
     }
 
     .status {
-      font-size: 17px;
+      font-size: 16px;
       color: #86868b;
       text-align: center;
-      padding: 12px 0;
+      padding: 10px 0;
       border-top: 1px solid #d2d2d6;
       border-bottom: 1px solid #d2d2d6;
-      margin-bottom: 18px;
-      min-height: 56px;
+      margin-bottom: 14px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* ===== 結果卡片（人生檔案風格） ===== */
+    /* ===== 結果卡片 ===== */
     .result {
       display: none;
-      margin-top: 8px;
+      margin-top: 6px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding-right: 6px;
     }
     .result.show {
       display: block;
@@ -172,7 +180,7 @@
     @keyframes fadeUp {
       0% {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(12px);
       }
       100% {
         opacity: 1;
@@ -180,106 +188,108 @@
       }
     }
 
-    /* 稱號 */
     .result-title {
       text-align: center;
-      padding: 14px 0 18px 0;
+      padding: 10px 0 14px 0;
       border-bottom: 2px solid #f0e8ea;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .result-label-small {
-      font-size: 13px;
+      font-size: 12px;
       color: #b097a0;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       font-weight: 400;
       margin-bottom: 2px;
     }
     .result-title-value {
-      font-size: 36px;
+      font-size: 32px;
       font-weight: 700;
       color: #c94a7a;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       line-height: 1.2;
     }
 
-    /* 八字盤 */
     .bazi-display {
       background: #f8f4f6;
-      border-radius: 16px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
       text-align: center;
       border: 1px solid #f0e8ea;
     }
     .bazi-display .bazi-label {
-      font-size: 12px;
+      font-size: 11px;
       color: #b097a0;
       letter-spacing: 2px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .bazi-display .bazi-pillars {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 600;
       color: #3a2c33;
-      letter-spacing: 6px;
+      letter-spacing: 5px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
-    .bazi-display .bazi-pillars span {
-      display: inline-block;
-      margin: 0 4px;
+    .bazi-display .bazi-daymaster {
+      font-size: 13px;
+      color: #b097a0;
+      margin-top: 4px;
     }
-    .bazi-display .bazi-pillars .highlight {
+    .bazi-display .bazi-daymaster strong {
       color: #c94a7a;
     }
 
-    /* 人生檔案項目 */
-    .profile-item {
-      padding: 12px 0;
-      border-bottom: 1px solid #f0e8ea;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
+    .story-block {
+      background: #fffafb;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      border-left: 4px solid #c94a7a;
     }
-    .profile-item:last-child {
-      border-bottom: none;
+    .story-block .story-label {
+      font-size: 11px;
+      color: #b097a0;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
     }
-    .profile-label {
-      font-weight: 600;
-      color: #1d1d1f;
-      width: 75px;
-      flex-shrink: 0;
-      font-size: 14px;
+    .story-block .story-text {
+      font-size: 16px;
+      color: #3a2c33;
+      line-height: 1.8;
     }
-    .profile-value {
-      color: #3a3a3c;
-      font-size: 15px;
+
+    .crystal-block {
+      background: #f0f4fa;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      border-left: 4px solid #6a8cba;
+    }
+    .crystal-block .crystal-label {
+      font-size: 11px;
+      color: #6a7a8a;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .crystal-block .crystal-text {
+      font-size: 16px;
+      color: #2a3a4a;
       line-height: 1.6;
-      flex: 1;
-    }
-    .profile-value .highlight-tag {
-      display: inline-block;
-      background: #fce4ec;
-      color: #c94a7a;
-      padding: 2px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      margin: 2px 3px 2px 0;
     }
 
     .qr-section {
-      margin: 18px 0 12px;
+      margin: 14px 0 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     .qr-section p {
-      font-size: 14px;
+      font-size: 13px;
       color: #86868b;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     #qrcode {
-      padding: 8px;
+      padding: 6px;
       background: #ffffff;
       display: inline-block;
       border-radius: 8px;
@@ -289,10 +299,10 @@
     .btn-reset {
       background: #86868b;
       box-shadow: none;
-      margin-top: 12px;
+      margin-top: 10px;
       width: 100%;
-      padding: 16px;
-      font-size: 18px;
+      padding: 14px;
+      font-size: 17px;
       font-weight: 600;
       color: #ffffff;
       border: none;
@@ -345,7 +355,6 @@
       }
     }
 
-    /* ===== 音樂控制 ===== */
     .music-control {
       position: fixed;
       bottom: 30px;
@@ -365,73 +374,88 @@
       background: #ffffff;
     }
 
-    /* ===== 手機版 ===== */
+    .right::-webkit-scrollbar,
+    .result::-webkit-scrollbar {
+      width: 4px;
+    }
+    .right::-webkit-scrollbar-thumb,
+    .result::-webkit-scrollbar-thumb {
+      background: #d2d2d6;
+      border-radius: 4px;
+    }
+
     @media (max-width: 768px) {
       body {
-        padding: 20px;
+        padding: 16px;
       }
       .container {
         flex-direction: column;
-        gap: 30px;
+        gap: 24px;
       }
       .left {
         flex: none;
         width: 100%;
       }
       .video-wrapper {
-        max-width: 400px;
+        max-width: 340px;
         margin: 0 auto;
       }
       .right {
         width: 100%;
+        max-height: none;
+        overflow-y: visible;
       }
       .title {
-        font-size: 36px;
+        font-size: 32px;
         text-align: center;
       }
       .sub {
         text-align: center;
+        font-size: 16px;
       }
-      .bazi-display .bazi-pillars {
-        font-size: 18px;
-        letter-spacing: 4px;
-      }
-      .profile-label {
-        width: 65px;
-        font-size: 13px;
+      .input-row {
+        flex-direction: column;
+        gap: 0;
       }
       .result-title-value {
-        font-size: 30px;
+        font-size: 28px;
+      }
+      .bazi-display .bazi-pillars {
+        font-size: 17px;
+        letter-spacing: 3px;
+      }
+      .story-block .story-text {
+        font-size: 15px;
+      }
+      .crystal-block .crystal-text {
+        font-size: 15px;
       }
     }
     @media (max-width: 480px) {
       .title {
-        font-size: 28px;
+        font-size: 26px;
       }
       .btn {
-        font-size: 18px;
-        padding: 16px;
+        font-size: 17px;
+        padding: 14px;
       }
       .video-wrapper {
-        max-width: 300px;
-      }
-      .bazi-display .bazi-pillars {
-        font-size: 16px;
-        letter-spacing: 2px;
-      }
-      .profile-label {
-        width: 58px;
-        font-size: 12px;
+        max-width: 260px;
       }
       .result-title-value {
-        font-size: 26px;
+        font-size: 24px;
+      }
+      .story-block .story-text {
+        font-size: 14px;
+      }
+      .crystal-block .crystal-text {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 全螢幕施法 -->
   <div id="spellOverlay">
     <video id="spellVideoFull" playsinline>
       <source src="spell.mp4" type="video/mp4" />
@@ -439,15 +463,12 @@
     <div class="spell-hint" id="spellHint">✦ 小桃正在為你推演命盤 ✦</div>
   </div>
 
-  <!-- 背景音樂 -->
   <audio id="bgMusic" loop preload="auto">
     <source src="bg-music.mp3" type="audio/mpeg" />
   </audio>
 
-  <!-- 音樂控制 -->
   <div class="music-control" id="musicToggle">🔇 音樂</div>
 
-  <!-- 主內容 -->
   <div class="container">
     <div class="left">
       <div class="video-wrapper">
@@ -459,136 +480,71 @@
 
     <div class="right">
       <div class="title">小桃說好命</div>
-      <div class="sub">八字・水晶・人生檔案</div>
+      <div class="sub">八字命盤・人生故事</div>
 
-      <!-- ===== 輸入區域 ===== -->
       <div id="inputArea">
+        <!-- 性別 + 曆法 -->
+        <div class="input-row">
+          <div class="input-group">
+            <label for="gender">性別</label>
+            <select id="gender">
+              <option value="male">男</option>
+              <option value="female">女</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="calendar">曆法</label>
+            <select id="calendar">
+              <option value="solar">陽曆</option>
+              <option value="lunar">農曆</option>
+            </select>
+          </div>
+        </div>
+
         <!-- 出生日期 -->
         <div class="input-group">
-          <label for="birthday">出生日期（公曆）</label>
+          <label for="birthday">出生日期</label>
           <input type="date" id="birthday" max="2016-01-01" value="2000-01-01" />
         </div>
 
-        <!-- 出生時辰 -->
+        <!-- 出生時間 -->
         <div class="input-group">
-          <label for="birthTime">出生時辰</label>
-          <select id="birthTime">
-            <option value="子時 (23:00-00:59)">子時 (23:00-00:59)</option>
-            <option value="丑時 (01:00-02:59)">丑時 (01:00-02:59)</option>
-            <option value="寅時 (03:00-04:59)">寅時 (03:00-04:59)</option>
-            <option value="卯時 (05:00-06:59)">卯時 (05:00-06:59)</option>
-            <option value="辰時 (07:00-08:59)" selected>辰時 (07:00-08:59)</option>
-            <option value="巳時 (09:00-10:59)">巳時 (09:00-10:59)</option>
-            <option value="午時 (11:00-12:59)">午時 (11:00-12:59)</option>
-            <option value="未時 (13:00-14:59)">未時 (13:00-14:59)</option>
-            <option value="申時 (15:00-16:59)">申時 (15:00-16:59)</option>
-            <option value="酉時 (17:00-18:59)">酉時 (17:00-18:59)</option>
-            <option value="戌時 (19:00-20:59)">戌時 (19:00-20:59)</option>
-            <option value="亥時 (21:00-22:59)">亥時 (21:00-22:59)</option>
-          </select>
+          <label for="birthTime">出生時間（請盡量精確到分鐘）</label>
+          <input type="time" id="birthTime" value="08:00" step="60" />
         </div>
 
-        <!-- 出生地點（所有地區平鋪） -->
-<div class="input-group">
-  <label for="birthPlace">出生地點</label>
-  <select id="birthPlace">
-    <option value="台灣省" selected>台灣</option>
-    <option value="北京市">北京</option>
-    <option value="上海市">上海</option>
-    <option value="天津市">天津</option>
-    <option value="重慶市">重慶</option>
-    <option value="河北省">河北</option>
-    <option value="山西省">山西</option>
-    <option value="遼寧省">遼寧</option>
-    <option value="吉林省">吉林</option>
-    <option value="黑龍江省">黑龍江</option>
-    <option value="江蘇省">江蘇</option>
-    <option value="浙江省">浙江</option>
-    <option value="安徽省">安徽</option>
-    <option value="福建省">福建</option>
-    <option value="江西省">江西</option>
-    <option value="山東省">山東</option>
-    <option value="河南省">河南</option>
-    <option value="湖北省">湖北</option>
-    <option value="湖南省">湖南</option>
-    <option value="廣東省">廣東</option>
-    <option value="海南省">海南</option>
-    <option value="四川省">四川</option>
-    <option value="貴州省">貴州</option>
-    <option value="雲南省">雲南</option>
-    <option value="陝西省">陝西</option>
-    <option value="甘肅省">甘肅</option>
-    <option value="青海省">青海</option>
-    <option value="內蒙古自治區">內蒙古</option>
-    <option value="新疆維吾爾自治區">新疆</option>
-    <option value="寧夏回族自治區">寧夏</option>
-    <option value="廣西壯族自治區">廣西</option>
-    <option value="西藏自治區">西藏</option>
-    <option value="香港特別行政區">香港</option>
-    <option value="澳門特別行政區">澳門</option>
-    <option value="美國">美國</option>
-    <option value="加拿大">加拿大</option>
-    <option value="英國">英國</option>
-    <option value="法國">法國</option>
-    <option value="德國">德國</option>
-    <option value="日本">日本</option>
-    <option value="韓國">韓國</option>
-    <option value="新加坡">新加坡</option>
-    <option value="馬來西亞">馬來西亞</option>
-    <option value="澳洲">澳洲</option>
-    <option value="紐西蘭">紐西蘭</option>
-    <option value="其他">其他</option>
-  </select>
-</div>
-
-
         <button class="btn" id="calcBtn">開始算命</button>
-        <div class="status" id="statusText">選好日期、時辰與地點，召喚小桃</div>
+        <div class="status" id="statusText">填寫完整出生資訊，召喚小桃</div>
       </div>
 
-      <!-- ===== 結果卡片（人生檔案風格） ===== -->
+      <!-- ===== 結果卡片 ===== -->
       <div class="result" id="resultCard">
-        <!-- 稱號 -->
         <div class="result-title">
-          <div class="result-label-small">✦ 專屬稱號 ✦</div>
+          <div class="result-label-small">✦ 你的江湖稱號 ✦</div>
           <div class="result-title-value" id="rTitle">—</div>
         </div>
 
-        <!-- 八字盤 -->
         <div class="bazi-display">
           <div class="bazi-label">📜 八字命盤</div>
           <div class="bazi-pillars" id="rBazi">—</div>
+          <div class="bazi-daymaster">日主：<strong id="rDayMaster">—</strong></div>
         </div>
 
-        <!-- 人生檔案 -->
-        <div class="profile-item">
-          <span class="profile-label">日主五行</span>
-          <span class="profile-value" id="rDayMaster">-</span>
-        </div>
-        <div class="profile-item">
-          <span class="profile-label">人生檔案</span>
-          <span class="profile-value" id="rLifeProfile">-</span>
-        </div>
-        <div class="profile-item">
-          <span class="profile-label">天賦優勢</span>
-          <span class="profile-value" id="rStrength">-</span>
-        </div>
-        <div class="profile-item">
-          <span class="profile-label">幸運色</span>
-          <span class="profile-value" id="rLuckyColor">-</span>
-        </div>
-        <div class="profile-item">
-          <span class="profile-label">推薦水晶</span>
-          <span class="profile-value" id="rCrystal">-</span>
+        <div class="story-block">
+          <div class="story-label">📖 你的人生故事</div>
+          <div class="story-text" id="rLifeStory">—</div>
         </div>
 
-        <!-- QR Code -->
+        <div class="crystal-block">
+          <div class="crystal-label">💎 你的五行水晶</div>
+          <div class="crystal-text" id="rCrystal">—</div>
+        </div>
+
         <div class="qr-section">
-          <p>📱 掃碼儲存人生檔案</p>
+          <p>📱 掃碼儲存你的人生故事</p>
           <div id="qrcode"></div>
         </div>
 
-        <!-- 重新算命 -->
         <button class="btn-reset" id="resetBtn">重新算命</button>
       </div>
     </div>
@@ -600,9 +556,10 @@
     const spellVideoFull = document.getElementById('spellVideoFull');
     const spellOverlay = document.getElementById('spellOverlay');
     const spellHint = document.getElementById('spellHint');
+    const genderSelect = document.getElementById('gender');
+    const calendarSelect = document.getElementById('calendar');
     const birthdayInput = document.getElementById('birthday');
-    const birthTimeSelect = document.getElementById('birthTime');
-    const birthPlaceSelect = document.getElementById('birthPlace');
+    const birthTimeInput = document.getElementById('birthTime');
     const calcBtn = document.getElementById('calcBtn');
     const statusText = document.getElementById('statusText');
     const resultCard = document.getElementById('resultCard');
@@ -612,9 +569,7 @@
     const rTitle = document.getElementById('rTitle');
     const rBazi = document.getElementById('rBazi');
     const rDayMaster = document.getElementById('rDayMaster');
-    const rLifeProfile = document.getElementById('rLifeProfile');
-    const rStrength = document.getElementById('rStrength');
-    const rLuckyColor = document.getElementById('rLuckyColor');
+    const rLifeStory = document.getElementById('rLifeStory');
     const rCrystal = document.getElementById('rCrystal');
 
     // ===== 音樂控制 =====
@@ -637,56 +592,36 @@
 
     musicToggle.addEventListener('click', () => {
       if (!audioCtx) initAudio();
-
       if (musicOn) {
         bgMusic.pause();
         musicToggle.textContent = '🔇 音樂';
       } else {
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         bgMusic.play().catch(() => {});
         musicToggle.textContent = '🔊 音樂';
       }
       musicOn = !musicOn;
     });
-
-    document.addEventListener('click', () => {
-      if (!audioCtx) initAudio();
-    }, { once: true });
-
-    // ===== 水晶推薦對照 =====
-    const crystalMap = {
-      '木': '綠松石，屬木，能增強你的決斷力與成長能量',
-      '火': '紅瑪瑙，屬火，能激發你的熱情與行動力',
-      '土': '黃水晶，屬土，能穩定你的情緒與根基',
-      '金': '白水晶，屬金，能提升你的洞察力與清晰度',
-      '水': '黑曜石，屬水，能保護你的能量場與直覺'
-    };
+    document.addEventListener('click', () => { if (!audioCtx) initAudio(); }, { once: true });
 
     // ===== 核心邏輯 =====
-    async function fetchFortune(birthDate, birthTime, birthPlace) {
+    async function fetchFortune(birthDate, birthTime, gender, calendar) {
       try {
         const res = await fetch('/api/fortune', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ birthDate, birthTime, birthPlace }),
+          body: JSON.stringify({ birthDate, birthTime, gender, calendar }),
         });
         if (!res.ok) throw new Error('伺服器錯誤');
         return await res.json();
       } catch (error) {
         console.warn('API 連線失敗，啟用離線備用');
         return {
-          dayMaster: '乙木',
-          lifeProfile: '你是個溫柔善良的人，喜歡幫助別人，像春風一樣溫暖。你擁有細膩的感知力，能在人際關係中創造和諧。',
-          title: '春風仙子',
-          strength: '溫柔細膩，善於傾聽',
-          weakness: '偶爾過於優柔寡斷',
-          wuxing: '木',
-          luckyColor: '綠色系（翠綠、草綠）',
-          bazi: { full: '甲子 丙寅 乙卯 庚辰' },
-          missingWuxing: ['金'],
-          wuxingCount: { '木': 3, '火': 1, '土': 1, '金': 0, '水': 1 }
+          title: '春風裡的一把火',
+          lifeStory: '你是那種走到哪裡都自帶光芒的人，像夏天的煙火，熱情又耀眼。但有時候太熱情了，旁邊的人需要戴墨鏡。你的人生就像一場華麗的冒險，總是在意想不到的地方找到驚喜。',
+          crystal: '紅瑪瑙，幫你把那份熱情轉化為行動力，讓你的人生火花燒得更旺、更持久。',
+          bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' },
+          dayMaster: '甲木'
         };
       }
     }
@@ -702,96 +637,62 @@
     }
 
     async function startDivination() {
+      const gender = genderSelect.value;
+      const calendar = calendarSelect.value;
       const birthDate = birthdayInput.value;
-      const birthTime = birthTimeSelect.value;
-      const birthPlace = birthPlaceSelect.value;
+      const birthTime = birthTimeInput.value;
 
-      if (!birthDate) {
-        statusText.textContent = '請選擇出生日期';
+      if (!birthDate || !birthTime) {
+        statusText.textContent = '⚠️ 請填寫完整的出生日期和時間';
         return;
       }
 
-      // 鎖定按鈕
       calcBtn.disabled = true;
       calcBtn.textContent = '施法中...';
       statusText.textContent = '小桃正在施法，請稍候';
       resultCard.classList.remove('show');
 
-      // === 全螢幕施法（有聲音） ===
+      // 全螢幕施法
       spellOverlay.classList.add('active');
       spellVideoFull.muted = false;
       spellVideoFull.volume = 1.0;
       spellVideoFull.currentTime = 0;
       spellHint.textContent = '✦ 小桃正在為你推演命盤 ✦';
-
-      // 同時在背景呼叫 API
-      const fortunePromise = fetchFortune(birthDate, birthTime, birthPlace);
-
-      // 播放施法影片
-      try {
-        await spellVideoFull.play();
-      } catch (e) {
-        // 如果瀏覽器阻擋自動播放，略過
-      }
-
+      try { await spellVideoFull.play(); } catch (e) {}
       if (musicOn) bgMusic.pause();
 
-      // === 等待影片播完（完整的一次） ===
+      const fortunePromise = fetchFortune(birthDate, birthTime, gender, calendar);
+
       await new Promise((resolve) => {
-        const onEnd = () => {
-          spellVideoFull.removeEventListener('ended', onEnd);
-          resolve();
-        };
+        const onEnd = () => { spellVideoFull.removeEventListener('ended', onEnd); resolve(); };
         spellVideoFull.addEventListener('ended', onEnd);
-        // 安全機制：最多等 12 秒強制跳過
-        setTimeout(() => {
-          spellVideoFull.removeEventListener('ended', onEnd);
-          resolve();
-        }, 12000);
+        setTimeout(() => { spellVideoFull.removeEventListener('ended', onEnd); resolve(); }, 12000);
       });
 
-      // === 影片播完，檢查 API 是否完成 ===
-      spellHint.textContent = '📖 你的人生檔案 Loading⋯⋯';
-
-      // 等待 API 回應（如果還沒完成）
+      spellHint.textContent = '📖 你的人生故事正在生成⋯⋯';
       const fortune = await fortunePromise;
 
-      // === 隱藏施法畫面 ===
       spellOverlay.classList.remove('active');
       spellVideoFull.pause();
       if (musicOn) bgMusic.play().catch(() => {});
 
-      // === 顯示結果 ===
-      const displayBazi = fortune.bazi?.full || '—';
-      const wuxing = fortune.wuxing || '木';
-      const missing = fortune.missingWuxing || [];
-
-      // 推薦水晶（根據缺什麼五行）
-      let crystal = fortune.crystal || '粉晶';
-      if (missing.length > 0 && crystalMap[missing[0]]) {
-        crystal = crystalMap[missing[0]];
-      }
-
+      // 填充結果
       rTitle.textContent = fortune.title || '無名俠客';
-      rBazi.textContent = displayBazi;
-      rDayMaster.textContent = fortune.dayMaster || '未知';
-      rLifeProfile.textContent = fortune.lifeProfile || '你是個獨特的人，擁有無限可能。';
-      rStrength.textContent = fortune.strength || '適應力強';
-      rLuckyColor.textContent = fortune.luckyColor || '粉色系';
-      rCrystal.textContent = crystal;
+      rBazi.textContent = fortune.bazi?.full || '—';
+      rDayMaster.textContent = fortune.dayMaster || '—';
+      rLifeStory.textContent = fortune.lifeStory || '你是個獨特的人，擁有無限可能。';
+      rCrystal.textContent = fortune.crystal || '粉晶，為你帶來溫柔的能量。';
 
       resultCard.classList.add('show');
-      statusText.textContent = '✨ 人生檔案已解鎖！';
+      statusText.textContent = '✨ 人生故事已解鎖！';
 
-      // === QR Code ===
+      // QR Code
       const resultData = {
         title: fortune.title,
-        bazi: displayBazi,
+        bazi: fortune.bazi,
         dayMaster: fortune.dayMaster,
-        lifeProfile: fortune.lifeProfile,
-        strength: fortune.strength,
-        luckyColor: fortune.luckyColor,
-        crystal: crystal
+        lifeStory: fortune.lifeStory,
+        crystal: fortune.crystal
       };
       const id = await saveResult(resultData);
       const qrUrl = `${window.location.origin}/result.html?id=${id}`;
@@ -799,28 +700,25 @@
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
         text: qrUrl,
-        width: 120,
-        height: 120,
+        width: 110,
+        height: 110,
         colorDark: '#1d1d1f',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
 
-      // === 恢復按鈕 ===
       calcBtn.disabled = false;
       calcBtn.textContent = '開始算命';
     }
 
-    // ===== 重新算命 =====
     resetBtn.addEventListener('click', () => {
       resultCard.classList.remove('show');
       document.getElementById('qrcode').innerHTML = '';
       inputArea.style.display = '';
-      statusText.textContent = '選好日期、時辰與地點，召喚小桃';
+      statusText.textContent = '填寫完整出生資訊，召喚小桃';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // ===== 綁定 =====
     calcBtn.addEventListener('click', startDivination);
 
     window.addEventListener('load', () => {
