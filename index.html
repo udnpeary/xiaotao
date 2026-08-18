@@ -7,7 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
   </script>
   <style>
-    /* ===== 全域樣式 ===== */
+    /* ===== 全域樣式（保持與之前相同） ===== */
     * {
       margin: 0;
       padding: 0;
@@ -32,8 +32,6 @@
       gap: 50px;
       background: transparent;
     }
-
-    /* ===== 左側：小桃動畫 ===== */
     .left {
       flex: 1.5;
       display: flex;
@@ -56,7 +54,6 @@
       display: block;
     }
 
-    /* ===== 右側：內容 ===== */
     .right {
       flex: 1.2;
       display: flex;
@@ -91,7 +88,6 @@
       padding-bottom: 16px;
     }
 
-    /* ===== 輸入區 ===== */
     .input-area {
       display: block;
       transition: opacity 0.3s;
@@ -183,7 +179,6 @@
       justify-content: center;
     }
 
-    /* ===== 結果卡片（更詳細、更幽默） ===== */
     .result {
       display: none;
       margin-top: 6px;
@@ -221,7 +216,6 @@
       line-height: 1.2;
     }
 
-    /* 八字命盤 */
     .bazi-display {
       background: #f8f4f6;
       border-radius: 12px;
@@ -252,7 +246,6 @@
       color: #c94a7a;
     }
 
-    /* 人生故事區（更詳細） */
     .story-block {
       background: #fffafb;
       border-radius: 12px;
@@ -272,7 +265,6 @@
       line-height: 1.8;
     }
 
-    /* 水晶推薦 */
     .crystal-block {
       background: #f0f4fa;
       border-radius: 12px;
@@ -292,7 +284,6 @@
       line-height: 1.6;
     }
 
-    /* 額外詳細資訊（個性、建議等）— 可選，但我們直接放在故事中 */
     .extra-detail {
       background: #f9f6f4;
       border-radius: 12px;
@@ -349,7 +340,6 @@
       background: #6e6e73;
     }
 
-    /* ===== 全螢幕施法 ===== */
     #spellOverlay {
       position: fixed;
       top: 0;
@@ -404,7 +394,6 @@
       background: #ffffff;
     }
 
-    /* ===== 手機版 ===== */
     @media (max-width: 768px) {
       body { padding: 16px; }
       .container { flex-direction: column; gap: 24px; }
@@ -448,9 +437,7 @@
   <!-- 音樂控制 -->
   <div class="music-control" id="musicToggle">🔇 音樂</div>
 
-  <!-- 主容器 -->
   <div class="container">
-    <!-- 左側：小桃動畫 -->
     <div class="left">
       <div class="video-wrapper">
         <video id="idleVideo" muted playsinline autoplay loop>
@@ -459,12 +446,10 @@
       </div>
     </div>
 
-    <!-- 右側：內容 -->
     <div class="right">
       <div class="title">小桃說好命</div>
       <div class="sub">八字命盤・人生故事</div>
 
-      <!-- 輸入區 -->
       <div id="inputArea" class="input-area">
         <div class="input-row">
           <div class="input-group">
@@ -517,7 +502,6 @@
         <div class="status" id="statusText">填寫完整出生資訊，召喚小桃</div>
       </div>
 
-      <!-- 結果卡片（詳細幽默） -->
       <div class="result" id="resultCard">
         <div class="result-title">
           <div class="result-label-small">✦ 你的江湖稱號 ✦</div>
@@ -540,7 +524,6 @@
           <div class="crystal-text" id="rCrystal">—</div>
         </div>
 
-        <!-- 可額外增加的小提示（幽默） -->
         <div class="extra-detail">
           <div class="extra-label">✨ 小桃悄悄話</div>
           <div class="extra-text" id="rExtra">命理僅供參考，人生還是要自己掌握方向！</div>
@@ -598,6 +581,7 @@
       }
     }
 
+    // 音樂按鈕點擊切換
     musicToggle.addEventListener('click', () => {
       if (!audioCtx) initAudio();
       if (musicOn) {
@@ -610,7 +594,21 @@
       }
       musicOn = !musicOn;
     });
-    document.addEventListener('click', () => { if (!audioCtx) initAudio(); }, { once: true });
+
+    // ===== 新增：自動播放（用戶首次點擊頁面時觸發） =====
+    document.addEventListener('click', function autoPlayMusic() {
+      if (!musicOn) {
+        if (!audioCtx) initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        bgMusic.play().catch(() => {});
+        musicToggle.textContent = '🔊 音樂';
+        musicOn = true;
+      }
+      // 移除監聽，只觸發一次
+      document.removeEventListener('click', autoPlayMusic);
+    }, { once: true });
+
+    // 如果用戶已經點擊過音樂按鈕，則自動播放監聽不應再觸發，但由於 once 只觸發一次，不會干擾
 
     // ===== 核心邏輯 =====
     async function fetchFortune(birthDate, birthTime, gender, calendar, birthplace) {
@@ -656,7 +654,6 @@
         return;
       }
 
-      // 鎖定按鈕
       calcBtn.disabled = true;
       calcBtn.textContent = '施法中...';
       statusText.textContent = '小桃正在施法，請稍候';
@@ -673,7 +670,6 @@
 
       const fortunePromise = fetchFortune(birthDate, birthTime, gender, calendar, birthplace);
 
-      // 等待影片播完
       await new Promise((resolve) => {
         const onEnd = () => { spellVideoFull.removeEventListener('ended', onEnd); resolve(); };
         spellVideoFull.addEventListener('ended', onEnd);
@@ -687,13 +683,11 @@
       spellVideoFull.pause();
       if (musicOn) bgMusic.play().catch(() => {});
 
-      // 填入結果
       rTitle.textContent = fortune.title || '無名俠客';
       rBazi.textContent = fortune.bazi?.full || '—';
       rDayMaster.textContent = fortune.dayMaster || '—';
       rLifeStory.textContent = fortune.lifeStory || '你是個獨特的人，擁有無限可能。';
       rCrystal.textContent = fortune.crystal || '粉晶，為你帶來溫柔的能量。';
-      // 增加幽默小語（可固定或隨機）
       const extraMessages = [
         '命理僅供參考，人生還是要自己掌握方向！小桃偷偷告訴你：今天適合吃點甜的。',
         '八字看出你的天賦，但真正的命運掌握在你手中。小桃覺得你明天運氣會不錯喔！',
@@ -703,11 +697,8 @@
 
       resultCard.classList.add('show');
       statusText.textContent = '✨ 人生故事已解鎖！';
-
-      // 隱藏輸入區
       inputArea.classList.add('hidden');
 
-      // QR Code
       const resultData = {
         title: fortune.title,
         bazi: fortune.bazi,
@@ -732,7 +723,6 @@
       calcBtn.textContent = '開始算命';
     }
 
-    // ===== 重新算命 =====
     resetBtn.addEventListener('click', () => {
       resultCard.classList.remove('show');
       document.getElementById('qrcode').innerHTML = '';
@@ -741,7 +731,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // ===== 綁定事件 =====
     calcBtn.addEventListener('click', startDivination);
 
     window.addEventListener('load', () => {
