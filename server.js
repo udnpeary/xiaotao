@@ -27,11 +27,10 @@ const resultStore = {};
 // ===== 自動尋找 fortune-skill 路徑 =====
 function findFortuneSkillPath() {
   const possiblePaths = [
-    path.join(__dirname, '../fortune-skill'),           // 本地開發：與 xiaotao 同層
-    path.join(__dirname, 'fortune-skill'),              // Render 部署：在專案根目錄
-    path.join('/opt/render/project', 'fortune-skill'),  // Render 備用路徑
+    path.join(__dirname, '../fortune-skill'),
+    path.join(__dirname, 'fortune-skill'),
+    path.join('/opt/render/project', 'fortune-skill'),
   ];
-
   for (const p of possiblePaths) {
     const scriptPath = path.join(p, 'scripts/bazi-chart.mjs');
     if (fs.existsSync(scriptPath)) {
@@ -45,7 +44,7 @@ function findFortuneSkillPath() {
 
 const FORTUNE_SKILL_PATH = findFortuneSkillPath();
 
-// ===== 1. 排盤函數（優先使用 fortune-skill，備用 lunar-javascript） =====
+// ===== 1. 排盤函數 =====
 function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台灣') {
   const [year, month, day] = birthDate.split('-').map(Number);
   const hourMatch = birthTime.match(/(\d{2}):/);
@@ -53,7 +52,6 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
   const minuteMatch = birthTime.match(/:(\d{2})/);
   const minute = minuteMatch ? parseInt(minuteMatch[1]) : 0;
 
-  // ---- 方案 A：使用 fortune-skill（含真太陽時） ----
   if (FORTUNE_SKILL_PATH) {
     try {
       console.log(`⏳ 正在使用 fortune-skill 排盤: ${birthDate} ${birthTime}`);
@@ -65,7 +63,6 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
         '--gender', gender,
         '--birthplace', birthplace
       ];
-
       console.log(`🔧 執行: node ${scriptPath} ${args.join(' ')}`);
 
       const output = execFileSync('node', [scriptPath, ...args], {
@@ -76,24 +73,19 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
 
       const result = JSON.parse(output);
       const bazi = result.bazi || result;
-
       return {
         yearPillar: bazi.year || bazi.yearPillar || '',
         monthPillar: bazi.month || bazi.monthPillar || '',
         dayPillar: bazi.day || bazi.dayPillar || '',
         hourPillar: bazi.hour || bazi.hourPillar || '',
         fullBazi: `${bazi.year || ''} ${bazi.month || ''} ${bazi.day || ''} ${bazi.hour || ''}`.trim(),
-        raw: result,
         source: 'fortune-skill'
       };
-
     } catch (error) {
       console.error('fortune-skill 排盤失敗，改用備用方案:', error.message);
-      // 繼續執行備用方案
     }
   }
 
-  // ---- 方案 B：備用 lunar-javascript ----
   try {
     console.log(`⏳ 使用 lunar-javascript 備用排盤: ${birthDate} ${birthTime}`);
     const { Lunar, Solar } = require('lunar-javascript');
@@ -113,14 +105,13 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
       fullBazi: `${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`,
       source: 'lunar-javascript'
     };
-
   } catch (error) {
     console.error('所有排盤方案都失敗:', error.message);
     return null;
   }
 }
 
-// ===== 2. 算命 API =====
+// ===== 2. 算命 API（加入運勢分數、財經分析） =====
 app.post('/api/fortune', async (req, res) => {
   const { birthDate, birthTime, gender, calendar, birthplace } = req.body;
   if (!birthDate || !birthTime) {
@@ -136,7 +127,7 @@ app.post('/api/fortune', async (req, res) => {
     console.log(`✅ 排盤成功 (來源: ${baziData.source})`);
 
     const systemPrompt = `
-你是一個幽默風趣的算命老師，代號「小桃魔女」。說話像一個老朋友，帶著一點搞笑和溫暖。
+你是一個幽默風趣的算命老師，代號「小桃魔女」，同時也是一位財經博主「小桃說財經」。
 
 以下是使用者**真實八字命盤**：
 
@@ -145,16 +136,18 @@ app.post('/api/fortune', async (req, res) => {
 日柱：${baziData.dayPillar}
 時柱：${baziData.hourPillar}
 
-請根據這份命盤，**用說故事的方式**描述這個人的命格，像是幫他寫一段「人生角色設定」。
-要幽默、有趣、有畫面感，讓人覺得「哇，好準！」但不要太嚴肅或過度玄學。
+請根據這份命盤，完成以下分析，回傳 **純 JSON**：
 
-然後推薦一種最適合他的五行水晶，並說明原因。
-
-回傳 **純 JSON**，格式如下：
 {
-  "title": "一個有趣的江湖稱號（例如：春風裡的一把火）",
-  "lifeStory": "用 100~150 字描述這個人的命格與人生故事，要幽默風趣、像在講一個角色的設定",
-  "crystal": "推薦一種水晶，說明為什麼適合他（例如：紫水晶，幫你冷靜一下你那衝動的靈魂）"
+  "title": "一個有趣的江湖稱號（4~6字）",
+  "lifeStory": "人生故事（80~100字，幽默風趣，像在講角色設定）",
+  "wealthScore": 財運分數（1-100的數字）,
+  "careerScore": 事業分數（1-100的數字）,
+  "loveScore": 感情分數（1-100的數字）,
+  "wealthAnalysis": "財運分析（40~50字，具體說明財運走勢、適合的投資方式）",
+  "careerAnalysis": "事業分析（40~50字，具體說明適合的行業、職場建議）",
+  "investmentAdvice": "投資方向建議（30~40字，具體到產業或資產類型）",
+  "crystal": "推薦一種五行水晶，說明原因（20字內）"
 }
 `;
 
@@ -162,7 +155,7 @@ app.post('/api/fortune', async (req, res) => {
       model: 'deepseek-chat',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `性別：${gender === 'male' ? '男' : '女'}，出生：${birthDate} ${birthTime}，請幫我寫一段幽默的人生故事。` }
+        { role: 'user', content: `性別：${gender === 'male' ? '男' : '女'}，出生：${birthDate} ${birthTime}，請分析。` }
       ],
       temperature: 0.8,
     });
@@ -194,20 +187,25 @@ function getFallbackResult(birthDate) {
   const [year, month, day] = birthDate.split('-').map(Number);
   const total = year + month + day;
   const index = total % 5;
-  const titleMap = ['春風裡的青龍', '夏日的鳳凰', '大地的麒麟', '秋天的白虎', '冬夜的玄武'];
+  const titleMap = ['春風青龍', '夏日鳳凰', '大地麒麟', '秋風白虎', '冬夜玄武'];
   const storyMap = [
-    '你像一棵春天剛發芽的樹，充滿了好奇心和生命力。喜歡到處探索，但有時候會不小心走太遠，需要有人拉你一把。',
-    '你是那種走到哪裡都自帶光芒的人，像夏天的煙火，熱情又耀眼。但有時候太熱情了，旁邊的人需要戴墨鏡。',
-    '你像一座穩穩的大山，給人滿滿的安全感。但有時候太穩了，會忘記自己其實也可以飛一下。',
-    '你像秋天的風，帶著一股清爽的銳利感，做事果斷乾脆。但有時候太銳利了，會不小心傷到旁邊的樹葉。',
-    '你像冬天的一條河，表面平靜，底下卻藏著很多故事。你有著深邃的智慧，但有時候想太多了，會忘記行動。'
+    '你像春天剛發芽的樹，充滿好奇心和生命力。喜歡到處探索，但有時候會走太遠。',
+    '你是走到哪都自帶光芒的人，像夏天的煙火，熱情又耀眼。',
+    '你像一座穩穩的大山，給人滿滿的安全感。但有時候太穩了，會忘記可以飛。',
+    '你像秋天的風，清爽銳利，做事果斷乾脆。但有時候會不小心傷到旁邊的人。',
+    '你像冬天的河，表面平靜，底下藏著很多故事。想太多會忘記行動。'
   ];
-  const crystalMap = ['綠松石', '紅瑪瑙', '黃水晶', '白水晶', '黑曜石'];
 
   return {
     title: titleMap[index],
     lifeStory: storyMap[index],
-    crystal: crystalMap[index] + '，能幫你平衡能量，發揮你的天賦',
+    wealthScore: 75,
+    careerScore: 80,
+    loveScore: 70,
+    wealthAnalysis: '財運平穩，適合長期投資，避免短線操作。房地產相關產業有機會。',
+    careerAnalysis: '適合教育、文化創意產業，貴人運佳，中年後事業起飛。',
+    investmentAdvice: '建議投資指數型基金或房地產，避開高風險新創。',
+    crystal: '黃水晶，招財聚氣，穩定財庫。',
     bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' }
   };
 }

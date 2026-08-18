@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>命理小卡</title>
-  <!-- html2canvas 用於截圖 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
   </script>
   <style>
@@ -21,17 +20,17 @@
       justify-content: center;
       align-items: center;
       font-family: -apple-system, 'PingFang TC', 'Helvetica Neue', sans-serif;
-      padding: 20px;
+      padding: 16px;
     }
 
-    /* ===== 3:4 卡片（要截圖的區塊） ===== */
+    /* ===== 3:4 精簡卡片 ===== */
     #card {
-      width: 360px;
+      width: 340px;
       aspect-ratio: 3 / 4;
-      background: linear-gradient(145deg, #ffffff, #faf5f7);
-      border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-      padding: 30px 24px;
+      background: linear-gradient(150deg, #ffffff, #f8f4f6);
+      border-radius: 28px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.10);
+      padding: 24px 20px 18px;
       display: flex;
       flex-direction: column;
       border: 1px solid #f0e8ea;
@@ -39,173 +38,173 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    /* 背景裝飾 */
     #card::before {
       content: '';
       position: absolute;
-      top: -80px;
-      right: -80px;
-      width: 200px;
-      height: 200px;
+      top: -60px;
+      right: -60px;
+      width: 160px;
+      height: 160px;
       background: radial-gradient(circle, #fce4ec 0%, transparent 70%);
       border-radius: 50%;
-      opacity: 0.4;
+      opacity: 0.35;
     }
     #card::after {
       content: '';
       position: absolute;
-      bottom: -60px;
-      left: -60px;
-      width: 150px;
-      height: 150px;
+      bottom: -40px;
+      left: -40px;
+      width: 120px;
+      height: 120px;
       background: radial-gradient(circle, #e8d5f0 0%, transparent 70%);
       border-radius: 50%;
-      opacity: 0.3;
+      opacity: 0.25;
     }
 
-    .card-title {
-      font-size: 22px;
+    .card-header {
+      text-align: center;
+      border-bottom: 2px solid #fce4ec;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .card-header .brand {
+      font-size: 16px;
       font-weight: 700;
       color: #c94a7a;
       letter-spacing: 4px;
-      text-align: center;
-      border-bottom: 2px solid #fce4ec;
-      padding-bottom: 12px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
     }
-    .card-subtitle {
-      font-size: 12px;
+    .card-header .sub {
+      font-size: 10px;
       color: #b097a0;
       letter-spacing: 2px;
-      text-align: center;
-      margin-top: -8px;
-      margin-bottom: 14px;
-      position: relative;
-      z-index: 1;
     }
 
     .card-bazi {
-      background: #f8f4f6;
-      border-radius: 12px;
-      padding: 12px 14px;
       text-align: center;
-      margin-bottom: 14px;
+      background: #f8f4f6;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
       border: 1px solid #f0e8ea;
       position: relative;
       z-index: 1;
     }
-    .card-bazi-label {
-      font-size: 10px;
+    .card-bazi .label {
+      font-size: 9px;
       color: #b097a0;
       letter-spacing: 2px;
     }
-    .card-bazi-text {
-      font-size: 18px;
+    .card-bazi .text {
+      font-size: 16px;
       font-weight: 600;
       color: #3a2c33;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
-    .card-bazi-daymaster {
-      font-size: 12px;
-      color: #b097a0;
-    }
-    .card-bazi-daymaster strong {
-      color: #c94a7a;
-    }
 
-    .card-title-nick {
-      font-size: 13px;
-      color: #b097a0;
-      letter-spacing: 2px;
+    .card-title {
       text-align: center;
-      margin-bottom: 2px;
-      position: relative;
-      z-index: 1;
-    }
-    .card-nickname {
-      font-size: 28px;
+      font-size: 20px;
       font-weight: 700;
       color: #c94a7a;
-      letter-spacing: 3px;
-      text-align: center;
-      margin-bottom: 12px;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
       position: relative;
       z-index: 1;
+    }
+    .card-title .small {
+      font-size: 10px;
+      color: #b097a0;
+      font-weight: 400;
+      letter-spacing: 2px;
+      display: block;
     }
 
     .card-story {
-      flex: 1;
+      font-size: 12px;
+      color: #3a2c33;
+      line-height: 1.6;
       background: #fffafb;
-      border-radius: 12px;
-      padding: 14px 16px;
-      border-left: 4px solid #c94a7a;
-      margin-bottom: 12px;
+      border-radius: 8px;
+      padding: 8px 12px;
+      border-left: 3px solid #c94a7a;
+      margin-bottom: 8px;
+      flex: 1;
+      min-height: 52px;
       position: relative;
       z-index: 1;
-      min-height: 80px;
+      overflow: hidden;
     }
-    .card-story-label {
-      font-size: 10px;
+
+    .card-scores {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .card-scores .s-item {
+      text-align: center;
+      font-size: 11px;
+      color: #6a5a6a;
+    }
+    .card-scores .s-item .num {
+      font-size: 18px;
+      font-weight: 700;
+      color: #c94a7a;
+    }
+    .card-scores .s-item .label {
+      font-size: 9px;
       color: #b097a0;
-      letter-spacing: 2px;
-      margin-bottom: 4px;
-    }
-    .card-story-text {
-      font-size: 14px;
-      color: #3a2c33;
-      line-height: 1.7;
+      display: block;
     }
 
     .card-crystal {
+      font-size: 12px;
+      color: #2a3a4a;
       background: #f0f4fa;
-      border-radius: 12px;
-      padding: 12px 16px;
-      border-left: 4px solid #6a8cba;
+      border-radius: 8px;
+      padding: 6px 12px;
+      border-left: 3px solid #6a8cba;
+      margin-bottom: 6px;
       position: relative;
       z-index: 1;
-      margin-bottom: 10px;
     }
-    .card-crystal-label {
-      font-size: 10px;
+    .card-crystal .clabel {
+      font-size: 9px;
       color: #6a7a8a;
-      letter-spacing: 2px;
-    }
-    .card-crystal-text {
-      font-size: 14px;
-      color: #2a3a4a;
-      line-height: 1.5;
+      letter-spacing: 1px;
     }
 
     .card-footer {
       text-align: center;
-      font-size: 10px;
+      font-size: 9px;
       color: #b097a0;
       letter-spacing: 2px;
       border-top: 1px solid #f3e8ea;
-      padding-top: 10px;
+      padding-top: 6px;
+      margin-top: auto;
       position: relative;
       z-index: 1;
-      margin-top: auto;
     }
 
     /* ===== 按鈕區 ===== */
     .btn-area {
-      margin-top: 20px;
+      margin-top: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 360px;
+      gap: 10px;
+      width: 340px;
       max-width: 100%;
     }
     .btn-download {
       background: #c94a7a;
       border: none;
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 18px;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 17px;
       font-weight: 600;
       color: #ffffff;
       cursor: pointer;
@@ -219,13 +218,12 @@
       opacity: 0.5;
       pointer-events: none;
     }
-
     .btn-back {
       background: #86868b;
       border: none;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 16px;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 15px;
       font-weight: 500;
       color: #ffffff;
       cursor: pointer;
@@ -236,170 +234,158 @@
       background: #6e6e73;
     }
 
-    .loading-text {
+    .loading {
       text-align: center;
       color: #86868b;
-      font-size: 16px;
-      padding: 40px 0;
+      font-size: 15px;
+      padding: 30px 0;
     }
-    .error-text {
+    .error {
       text-align: center;
       color: #c94a7a;
-      font-size: 16px;
-      padding: 40px 0;
+      font-size: 15px;
+      padding: 30px 0;
     }
 
-    /* ===== 手機優化 ===== */
-    @media (max-width: 420px) {
+    @media (max-width: 400px) {
       #card {
         width: 100%;
-        max-width: 360px;
-        padding: 20px 16px;
-        border-radius: 24px;
+        max-width: 340px;
+        padding: 18px 14px 14px;
+        border-radius: 20px;
       }
-      .card-bazi-text {
+      .card-bazi .text {
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+      .card-title {
+        font-size: 18px;
+      }
+      .card-story {
+        font-size: 11px;
+        padding: 6px 10px;
+        min-height: 40px;
+      }
+      .card-scores .s-item .num {
         font-size: 16px;
-        letter-spacing: 3px;
-      }
-      .card-nickname {
-        font-size: 24px;
-      }
-      .card-story-text {
-        font-size: 13px;
-      }
-      .card-crystal-text {
-        font-size: 13px;
       }
       .btn-area {
         width: 100%;
-        max-width: 360px;
+        max-width: 340px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 卡片 -->
   <div id="card">
-    <div class="card-title">✦ 小桃說好命 ✦</div>
-    <div class="card-subtitle">八字命盤・人生故事</div>
-
-    <div class="card-bazi">
-      <div class="card-bazi-label">📜 八字命盤</div>
-      <div class="card-bazi-text" id="displayBazi">—</div>
-      <div class="card-bazi-daymaster">日主：<strong id="displayDayMaster">—</strong></div>
+    <div class="card-header">
+      <div class="brand">✦ 小桃說好命 ✦</div>
+      <div class="sub">八字命盤・人生故事</div>
     </div>
 
-    <div class="card-title-nick">✦ 你的江湖稱號 ✦</div>
-    <div class="card-nickname" id="displayTitle">—</div>
+    <div class="card-bazi">
+      <div class="label">📜 八字命盤</div>
+      <div class="text" id="displayBazi">—</div>
+    </div>
 
-    <div class="card-story">
-      <div class="card-story-label">📖 你的人生故事</div>
-      <div class="card-story-text" id="displayStory">—</div>
+    <div class="card-title">
+      <span class="small">✦ 你的江湖稱號 ✦</span>
+      <span id="displayTitle">—</span>
+    </div>
+
+    <div class="card-story" id="displayStory">—</div>
+
+    <div class="card-scores">
+      <div class="s-item"><span class="num" id="displayWealth">—</span><span class="label">💰 財運</span></div>
+      <div class="s-item"><span class="num" id="displayCareer">—</span><span class="label">💼 事業</span></div>
+      <div class="s-item"><span class="num" id="displayLove">—</span><span class="label">❤️ 感情</span></div>
     </div>
 
     <div class="card-crystal">
-      <div class="card-crystal-label">💎 你的五行水晶</div>
-      <div class="card-crystal-text" id="displayCrystal">—</div>
+      <div class="clabel">💎 推薦水晶</div>
+      <span id="displayCrystal">—</span>
     </div>
 
     <div class="card-footer">— 僅供參考 · 小桃說好命 —</div>
   </div>
 
-  <!-- 按鈕區 -->
   <div class="btn-area">
-    <button class="btn-download" id="downloadBtn">⬇ 下載命理小卡</button>
+    <button class="btn-download" id="downloadBtn" disabled>⬇ 下載命理小卡</button>
     <button class="btn-back" id="backBtn">← 返回首頁</button>
   </div>
 
   <script>
-    // ===== 從 URL 獲取 ID =====
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
     const displayBazi = document.getElementById('displayBazi');
-    const displayDayMaster = document.getElementById('displayDayMaster');
     const displayTitle = document.getElementById('displayTitle');
     const displayStory = document.getElementById('displayStory');
+    const displayWealth = document.getElementById('displayWealth');
+    const displayCareer = document.getElementById('displayCareer');
+    const displayLove = document.getElementById('displayLove');
     const displayCrystal = document.getElementById('displayCrystal');
     const downloadBtn = document.getElementById('downloadBtn');
     const backBtn = document.getElementById('backBtn');
 
     let resultData = null;
 
-    // ===== 載入結果 =====
     async function loadResult() {
       if (!id) {
-        document.getElementById('card').innerHTML = '<div class="error-text">❌ 無效的命盤連結</div>';
+        document.getElementById('card').innerHTML = '<div class="error">❌ 無效的命盤連結</div>';
         downloadBtn.disabled = true;
         return;
       }
-
       try {
         const res = await fetch(`/api/result/${id}`);
         if (!res.ok) throw new Error('找不到結果');
         resultData = await res.json();
 
-        // 填入數據
         displayBazi.textContent = resultData.bazi?.full || '—';
-        displayDayMaster.textContent = resultData.dayMaster || '—';
         displayTitle.textContent = resultData.title || '無名俠客';
-        displayStory.textContent = resultData.lifeStory || '你是個獨特的人，擁有無限可能。';
-        displayCrystal.textContent = resultData.crystal || '粉晶，為你帶來溫柔的能量。';
+        displayStory.textContent = resultData.lifeStory || '你是個獨特的人。';
+        displayWealth.textContent = resultData.wealthScore || '—';
+        displayCareer.textContent = resultData.careerScore || '—';
+        displayLove.textContent = resultData.loveScore || '—';
+        displayCrystal.textContent = resultData.crystal || '粉晶';
 
         downloadBtn.disabled = false;
-
       } catch (error) {
-        document.getElementById('card').innerHTML = '<div class="error-text">❌ 命盤已過期或不存在</div>';
+        document.getElementById('card').innerHTML = '<div class="error">❌ 命盤已過期或不存在</div>';
         downloadBtn.disabled = true;
       }
     }
 
-    // ===== 下載圖片 =====
     async function downloadCard() {
       const card = document.getElementById('card');
       downloadBtn.disabled = true;
       downloadBtn.textContent = '⏳ 生成中...';
-
       try {
-        // 等待渲染完成
-        await new Promise(r => setTimeout(r, 300));
-
+        await new Promise(r => setTimeout(r, 200));
         const canvas = await html2canvas(card, {
-          scale: 2,
+          scale: 2.5,
           backgroundColor: '#ffffff',
           useCORS: true,
           logging: false,
-          width: 360,
-          height: 480,
-          onclone: (clonedDoc) => {
-            // 確保克隆的卡片樣式正確
-          }
+          width: 340,
+          height: 453,
         });
-
-        // 下載
         const link = document.createElement('a');
         link.download = `命理小卡_${resultData?.title || '小桃說好命'}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-
       } catch (error) {
         console.error('生成圖片失敗：', error);
-        alert('圖片生成失敗，請重試或截圖保存');
+        alert('圖片生成失敗，請截圖保存');
       }
-
       downloadBtn.disabled = false;
       downloadBtn.textContent = '⬇ 下載命理小卡';
     }
 
-    // ===== 返回首頁 =====
-    backBtn.addEventListener('click', () => {
-      window.location.href = '/';
-    });
-
+    backBtn.addEventListener('click', () => { window.location.href = '/'; });
     downloadBtn.addEventListener('click', downloadCard);
 
-    // ===== 載入 =====
     loadResult();
   </script>
 
