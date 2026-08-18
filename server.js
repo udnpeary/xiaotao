@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { OpenAI } = require('openai');
-const { Lunar, Solar } = require('lunar-javascript');
+const { execFileSync } = require('child_process');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -22,63 +23,74 @@ const client = new OpenAI({
 
 const resultStore = {};
 
-// ============================================================
-// 使用 lunar-javascript 排盤（精準）
-// ============================================================
+// ===== 設定 fortune-skill 的路徑 =====
+const FORTUNE_SKILL_PATH = path.join(__dirname, '../fortune-skill');
 
-function getBaziChart(birthDate, birthTime, gender = 'male', calendar = 'solar') {
+// ===== 1. 呼叫 fortune-skill 排盤 =====
+function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台灣') {
+  const [year, month, day] = birthDate.split('-').map(Number);
+  const hourMatch = birthTime.match(/(\d{2}):/);
+  const hour = hourMatch ? parseInt(hourMatch[1]) : 8;
+  const minuteMatch = birthTime.match(/:(\d{2})/);
+  const minute = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+
+  console.log(`⏳ 正在使用 fortune-skill 排盤: ${birthDate} ${birthTime}`);
+
   try {
-    // 解析日期時間
-    const [year, month, day] = birthDate.split('-').map(Number);
-    const hourMatch = birthTime.match(/(\d{2}):/);
-    const hour = hourMatch ? parseInt(hourMatch[1]) : 8;
-    const minute = 0;
+    const scriptPath = path.join(FORTUNE_SKILL_PATH, 'scripts/bazi-chart.mjs');
 
-    console.log(`⏳ 正在使用 lunar-javascript 排盤: ${birthDate} ${birthTime}`);
+    // 構建參數：--solar YYYY-MM-DD --hour H --minute M --gender male/female --birthplace "城市名"
+    const args = [
+      '--solar', `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+      '--hour', String(hour),
+      '--minute', String(minute),
+      '--gender', gender,
+      '--birthplace', birthplace
+    ];
 
-    // 建立 Solar 對象（公曆）
-    const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
-    // 轉換為農曆
-    const lunar = solar.getLunar();
+    console.log(`🔧 執行: node ${scriptPath} ${args.join(' ')}`);
 
-    // 取得四柱八字
-    const yearPillar = lunar.getYearInGanZhi();
-    const monthPillar = lunar.getMonthInGanZhi();
-    const dayPillar = lunar.getDayInGanZhi();
-    const hourPillar = lunar.getTimeInGanZhi();
+    // 使用 execFileSync 直接執行 node，不經 shell
+    const output = execFileSync('node', [scriptPath, ...args], {
+      encoding: 'utf-8',
+      timeout: 15000,
+      env: { ...process.env }
+    });
 
-    // 日主（日柱的天干）
-    const dayMaster = dayPillar.charAt(0) + '木'; // 注意：這裡只是範例，需轉換五行，但我們可以保留天干
+    // 解析結果（假設輸出為 JSON）
+    const result = JSON.parse(output);
 
-    // 完整八字
-    const fullBazi = `${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`;
-
-    console.log(`✅ 排盤成功: ${fullBazi}`);
+    // 從 result 中提取八字數據
+    // 根據 fortune-skill 的輸出格式，它可能返回 { bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午' } }
+    // 或者直接返回四柱
+    const bazi = result.bazi || result;
 
     return {
-      yearPillar,
-      monthPillar,
-      dayPillar,
-      hourPillar,
-      dayMaster,
-      fullBazi
+      yearPillar: bazi.year || bazi.yearPillar || '',
+      monthPillar: bazi.month || bazi.monthPillar || '',
+      dayPillar: bazi.day || bazi.dayPillar || '',
+      hourPillar: bazi.hour || bazi.hourPillar || '',
+      fullBazi: `${bazi.year || ''} ${bazi.month || ''} ${bazi.day || ''} ${bazi.hour || ''}`.trim(),
+      raw: result
     };
 
   } catch (error) {
-    console.error('lunar-javascript 排盤失敗：', error.message);
+    console.error('fortune-skill 排盤失敗：', error.message);
+    if (error.stderr) console.error('stderr:', error.stderr.toString());
     return null;
   }
 }
 
-// ===== 2. 算命 API（其餘保持不變） =====
+// ===== 2. 算命 API =====
 app.post('/api/fortune', async (req, res) => {
-  const { birthDate, birthTime, gender, calendar } = req.body;
+  const { birthDate, birthTime, gender, calendar, birthplace } = req.body;
   if (!birthDate || !birthTime) {
     return res.status(400).json({ error: '請填寫完整的出生日期和時間' });
   }
 
   try {
-    const baziData = getBaziChart(birthDate, birthTime, gender, calendar);
+    // 注意：fortune-skill 預設為公曆，若用戶選農曆需另行處理，但目前我們只支援公曆
+    const baziData = getBaziChart(birthDate, birthTime, gender, birthplace || '台灣');
     if (!baziData) {
       return res.json(getFallbackResult(birthDate));
     }
@@ -94,7 +106,7 @@ app.post('/api/fortune', async (req, res) => {
 月柱：${baziData.monthPillar}
 日柱：${baziData.dayPillar}
 時柱：${baziData.hourPillar}
-日主：${baziData.dayMaster}
+日主：${baziData.dayPillar ? baziData.dayPillar.charAt(0) : '未知'}
 
 請根據這份命盤，**用說故事的方式**描述這個人的命格，像是幫他寫一段「人生角色設定」。
 要幽默、有趣、有畫面感，讓人覺得「哇，好準！」但不要太嚴肅或過度玄學。
@@ -131,7 +143,7 @@ app.post('/api/fortune', async (req, res) => {
         hour: baziData.hourPillar,
         full: baziData.fullBazi
       },
-      dayMaster: baziData.dayMaster
+      dayMaster: baziData.dayPillar ? baziData.dayPillar.charAt(0) : '未知'
     };
 
     res.json(finalResult);
@@ -161,7 +173,7 @@ function getFallbackResult(birthDate) {
     lifeStory: storyMap[index],
     crystal: crystalMap[index] + '，能幫你平衡能量，發揮你的天賦',
     bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' },
-    dayMaster: '甲木'
+    dayMaster: '甲'
   };
 }
 
@@ -187,5 +199,5 @@ app.get('/api/result/:id', (req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ 小桃魔女啟動，運行在端口 ${port}`);
-  console.log('📁 使用 lunar-javascript 精準排盤');
+  console.log(`📁 fortune-skill 路徑: ${FORTUNE_SKILL_PATH}`);
 });

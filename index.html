@@ -7,6 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
   </script>
   <style>
+    /* ===== 全域樣式 ===== */
     * {
       margin: 0;
       padding: 0;
@@ -31,6 +32,8 @@
       gap: 50px;
       background: transparent;
     }
+
+    /* ===== 左側：小桃動畫 ===== */
     .left {
       flex: 1.5;
       display: flex;
@@ -53,6 +56,7 @@
       display: block;
     }
 
+    /* ===== 右側：內容 ===== */
     .right {
       flex: 1.2;
       display: flex;
@@ -62,6 +66,14 @@
       max-height: 90vh;
       overflow-y: auto;
     }
+    .right::-webkit-scrollbar {
+      width: 4px;
+    }
+    .right::-webkit-scrollbar-thumb {
+      background: #d2d2d6;
+      border-radius: 4px;
+    }
+
     .title {
       font-size: 40px;
       font-weight: 700;
@@ -79,9 +91,15 @@
       padding-bottom: 16px;
     }
 
+    /* ===== 輸入區 ===== */
     .input-area {
       display: block;
+      transition: opacity 0.3s;
     }
+    .input-area.hidden {
+      display: none;
+    }
+
     .input-group {
       margin-bottom: 14px;
     }
@@ -165,7 +183,7 @@
       justify-content: center;
     }
 
-    /* ===== 結果卡片 ===== */
+    /* ===== 結果卡片（更詳細、更幽默） ===== */
     .result {
       display: none;
       margin-top: 6px;
@@ -178,14 +196,8 @@
       animation: fadeUp 0.5s ease;
     }
     @keyframes fadeUp {
-      0% {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(16px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .result-title {
@@ -209,11 +221,12 @@
       line-height: 1.2;
     }
 
+    /* 八字命盤 */
     .bazi-display {
       background: #f8f4f6;
       border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
       text-align: center;
       border: 1px solid #f0e8ea;
     }
@@ -224,10 +237,10 @@
       margin-bottom: 4px;
     }
     .bazi-display .bazi-pillars {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 600;
       color: #3a2c33;
-      letter-spacing: 5px;
+      letter-spacing: 6px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
     .bazi-display .bazi-daymaster {
@@ -239,6 +252,7 @@
       color: #c94a7a;
     }
 
+    /* 人生故事區（更詳細） */
     .story-block {
       background: #fffafb;
       border-radius: 12px;
@@ -250,7 +264,7 @@
       font-size: 11px;
       color: #b097a0;
       letter-spacing: 2px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .story-block .story-text {
       font-size: 16px;
@@ -258,6 +272,7 @@
       line-height: 1.8;
     }
 
+    /* 水晶推薦 */
     .crystal-block {
       background: #f0f4fa;
       border-radius: 12px;
@@ -274,6 +289,26 @@
     .crystal-block .crystal-text {
       font-size: 16px;
       color: #2a3a4a;
+      line-height: 1.6;
+    }
+
+    /* 額外詳細資訊（個性、建議等）— 可選，但我們直接放在故事中 */
+    .extra-detail {
+      background: #f9f6f4;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      border-left: 4px solid #d4b8a8;
+    }
+    .extra-detail .extra-label {
+      font-size: 11px;
+      color: #a08070;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .extra-detail .extra-text {
+      font-size: 15px;
+      color: #3a2c33;
       line-height: 1.6;
     }
 
@@ -346,13 +381,8 @@
       animation: pulseText 1.5s ease-in-out infinite;
     }
     @keyframes pulseText {
-      0%,
-      100% {
-        opacity: 0.5;
-      }
-      50% {
-        opacity: 1;
-      }
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
     .music-control {
@@ -374,88 +404,35 @@
       background: #ffffff;
     }
 
-    .right::-webkit-scrollbar,
-    .result::-webkit-scrollbar {
-      width: 4px;
-    }
-    .right::-webkit-scrollbar-thumb,
-    .result::-webkit-scrollbar-thumb {
-      background: #d2d2d6;
-      border-radius: 4px;
-    }
-
+    /* ===== 手機版 ===== */
     @media (max-width: 768px) {
-      body {
-        padding: 16px;
-      }
-      .container {
-        flex-direction: column;
-        gap: 24px;
-      }
-      .left {
-        flex: none;
-        width: 100%;
-      }
-      .video-wrapper {
-        max-width: 340px;
-        margin: 0 auto;
-      }
-      .right {
-        width: 100%;
-        max-height: none;
-        overflow-y: visible;
-      }
-      .title {
-        font-size: 32px;
-        text-align: center;
-      }
-      .sub {
-        text-align: center;
-        font-size: 16px;
-      }
-      .input-row {
-        flex-direction: column;
-        gap: 0;
-      }
-      .result-title-value {
-        font-size: 28px;
-      }
-      .bazi-display .bazi-pillars {
-        font-size: 17px;
-        letter-spacing: 3px;
-      }
-      .story-block .story-text {
-        font-size: 15px;
-      }
-      .crystal-block .crystal-text {
-        font-size: 15px;
-      }
+      body { padding: 16px; }
+      .container { flex-direction: column; gap: 24px; }
+      .left { flex: none; width: 100%; }
+      .video-wrapper { max-width: 340px; margin: 0 auto; }
+      .right { width: 100%; max-height: none; overflow-y: visible; }
+      .title { font-size: 32px; text-align: center; }
+      .sub { text-align: center; font-size: 16px; }
+      .input-row { flex-direction: column; gap: 0; }
+      .result-title-value { font-size: 28px; }
+      .bazi-display .bazi-pillars { font-size: 18px; letter-spacing: 4px; }
+      .story-block .story-text { font-size: 15px; }
+      .crystal-block .crystal-text { font-size: 15px; }
     }
     @media (max-width: 480px) {
-      .title {
-        font-size: 26px;
-      }
-      .btn {
-        font-size: 17px;
-        padding: 14px;
-      }
-      .video-wrapper {
-        max-width: 260px;
-      }
-      .result-title-value {
-        font-size: 24px;
-      }
-      .story-block .story-text {
-        font-size: 14px;
-      }
-      .crystal-block .crystal-text {
-        font-size: 14px;
-      }
+      .title { font-size: 26px; }
+      .btn { font-size: 17px; padding: 14px; }
+      .video-wrapper { max-width: 260px; }
+      .result-title-value { font-size: 24px; }
+      .story-block .story-text { font-size: 14px; }
+      .crystal-block .crystal-text { font-size: 14px; }
+      .bazi-display .bazi-pillars { font-size: 16px; letter-spacing: 3px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- 全螢幕施法 -->
   <div id="spellOverlay">
     <video id="spellVideoFull" playsinline>
       <source src="spell.mp4" type="video/mp4" />
@@ -463,13 +440,17 @@
     <div class="spell-hint" id="spellHint">✦ 小桃正在為你推演命盤 ✦</div>
   </div>
 
+  <!-- 背景音樂 -->
   <audio id="bgMusic" loop preload="auto">
     <source src="bg-music.mp3" type="audio/mpeg" />
   </audio>
 
+  <!-- 音樂控制 -->
   <div class="music-control" id="musicToggle">🔇 音樂</div>
 
+  <!-- 主容器 -->
   <div class="container">
+    <!-- 左側：小桃動畫 -->
     <div class="left">
       <div class="video-wrapper">
         <video id="idleVideo" muted playsinline autoplay loop>
@@ -478,12 +459,13 @@
       </div>
     </div>
 
+    <!-- 右側：內容 -->
     <div class="right">
       <div class="title">小桃說好命</div>
       <div class="sub">八字命盤・人生故事</div>
 
-      <div id="inputArea">
-        <!-- 性別 + 曆法 -->
+      <!-- 輸入區 -->
+      <div id="inputArea" class="input-area">
         <div class="input-row">
           <div class="input-group">
             <label for="gender">性別</label>
@@ -501,23 +483,41 @@
           </div>
         </div>
 
-        <!-- 出生日期 -->
         <div class="input-group">
           <label for="birthday">出生日期</label>
           <input type="date" id="birthday" max="2016-01-01" value="2000-01-01" />
         </div>
 
-        <!-- 出生時間 -->
         <div class="input-group">
-          <label for="birthTime">出生時間（請盡量精確到分鐘）</label>
+          <label for="birthTime">出生時間（請盡量精確）</label>
           <input type="time" id="birthTime" value="08:00" step="60" />
+        </div>
+
+        <div class="input-group">
+          <label for="birthPlace">出生地點</label>
+          <select id="birthPlace">
+            <option value="台灣" selected>台灣</option>
+            <option value="中國">中國大陸</option>
+            <option value="香港">香港</option>
+            <option value="澳門">澳門</option>
+            <option value="美國">美國</option>
+            <option value="加拿大">加拿大</option>
+            <option value="英國">英國</option>
+            <option value="日本">日本</option>
+            <option value="韓國">韓國</option>
+            <option value="新加坡">新加坡</option>
+            <option value="馬來西亞">馬來西亞</option>
+            <option value="澳洲">澳洲</option>
+            <option value="紐西蘭">紐西蘭</option>
+            <option value="其他">其他</option>
+          </select>
         </div>
 
         <button class="btn" id="calcBtn">開始算命</button>
         <div class="status" id="statusText">填寫完整出生資訊，召喚小桃</div>
       </div>
 
-      <!-- ===== 結果卡片 ===== -->
+      <!-- 結果卡片（詳細幽默） -->
       <div class="result" id="resultCard">
         <div class="result-title">
           <div class="result-label-small">✦ 你的江湖稱號 ✦</div>
@@ -540,8 +540,14 @@
           <div class="crystal-text" id="rCrystal">—</div>
         </div>
 
+        <!-- 可額外增加的小提示（幽默） -->
+        <div class="extra-detail">
+          <div class="extra-label">✨ 小桃悄悄話</div>
+          <div class="extra-text" id="rExtra">命理僅供參考，人生還是要自己掌握方向！</div>
+        </div>
+
         <div class="qr-section">
-          <p>📱 掃碼儲存你的人生故事</p>
+          <p>📱 掃碼保存你的命理小卡</p>
           <div id="qrcode"></div>
         </div>
 
@@ -551,7 +557,7 @@
   </div>
 
   <script>
-    // ===== DOM =====
+    // ===== DOM 元素 =====
     const idleVideo = document.getElementById('idleVideo');
     const spellVideoFull = document.getElementById('spellVideoFull');
     const spellOverlay = document.getElementById('spellOverlay');
@@ -560,6 +566,7 @@
     const calendarSelect = document.getElementById('calendar');
     const birthdayInput = document.getElementById('birthday');
     const birthTimeInput = document.getElementById('birthTime');
+    const birthPlaceSelect = document.getElementById('birthPlace');
     const calcBtn = document.getElementById('calcBtn');
     const statusText = document.getElementById('statusText');
     const resultCard = document.getElementById('resultCard');
@@ -571,6 +578,7 @@
     const rDayMaster = document.getElementById('rDayMaster');
     const rLifeStory = document.getElementById('rLifeStory');
     const rCrystal = document.getElementById('rCrystal');
+    const rExtra = document.getElementById('rExtra');
 
     // ===== 音樂控制 =====
     const bgMusic = document.getElementById('bgMusic');
@@ -605,12 +613,12 @@
     document.addEventListener('click', () => { if (!audioCtx) initAudio(); }, { once: true });
 
     // ===== 核心邏輯 =====
-    async function fetchFortune(birthDate, birthTime, gender, calendar) {
+    async function fetchFortune(birthDate, birthTime, gender, calendar, birthplace) {
       try {
         const res = await fetch('/api/fortune', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ birthDate, birthTime, gender, calendar }),
+          body: JSON.stringify({ birthDate, birthTime, gender, calendar, birthplace }),
         });
         if (!res.ok) throw new Error('伺服器錯誤');
         return await res.json();
@@ -620,7 +628,7 @@
           title: '春風裡的一把火',
           lifeStory: '你是那種走到哪裡都自帶光芒的人，像夏天的煙火，熱情又耀眼。但有時候太熱情了，旁邊的人需要戴墨鏡。你的人生就像一場華麗的冒險，總是在意想不到的地方找到驚喜。',
           crystal: '紅瑪瑙，幫你把那份熱情轉化為行動力，讓你的人生火花燒得更旺、更持久。',
-          bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' },
+          bazi: { full: '甲子 丙寅 戊辰 庚午' },
           dayMaster: '甲木'
         };
       }
@@ -641,12 +649,14 @@
       const calendar = calendarSelect.value;
       const birthDate = birthdayInput.value;
       const birthTime = birthTimeInput.value;
+      const birthplace = birthPlaceSelect.value;
 
       if (!birthDate || !birthTime) {
         statusText.textContent = '⚠️ 請填寫完整的出生日期和時間';
         return;
       }
 
+      // 鎖定按鈕
       calcBtn.disabled = true;
       calcBtn.textContent = '施法中...';
       statusText.textContent = '小桃正在施法，請稍候';
@@ -661,8 +671,9 @@
       try { await spellVideoFull.play(); } catch (e) {}
       if (musicOn) bgMusic.pause();
 
-      const fortunePromise = fetchFortune(birthDate, birthTime, gender, calendar);
+      const fortunePromise = fetchFortune(birthDate, birthTime, gender, calendar, birthplace);
 
+      // 等待影片播完
       await new Promise((resolve) => {
         const onEnd = () => { spellVideoFull.removeEventListener('ended', onEnd); resolve(); };
         spellVideoFull.addEventListener('ended', onEnd);
@@ -676,15 +687,25 @@
       spellVideoFull.pause();
       if (musicOn) bgMusic.play().catch(() => {});
 
-      // 填充結果
+      // 填入結果
       rTitle.textContent = fortune.title || '無名俠客';
       rBazi.textContent = fortune.bazi?.full || '—';
       rDayMaster.textContent = fortune.dayMaster || '—';
       rLifeStory.textContent = fortune.lifeStory || '你是個獨特的人，擁有無限可能。';
       rCrystal.textContent = fortune.crystal || '粉晶，為你帶來溫柔的能量。';
+      // 增加幽默小語（可固定或隨機）
+      const extraMessages = [
+        '命理僅供參考，人生還是要自己掌握方向！小桃偷偷告訴你：今天適合吃點甜的。',
+        '八字看出你的天賦，但真正的命運掌握在你手中。小桃覺得你明天運氣會不錯喔！',
+        '江湖人稱「命理界の小桃」，你的命盤很有故事性，期待你寫下精彩篇章！'
+      ];
+      rExtra.textContent = extraMessages[Math.floor(Math.random() * extraMessages.length)];
 
       resultCard.classList.add('show');
       statusText.textContent = '✨ 人生故事已解鎖！';
+
+      // 隱藏輸入區
+      inputArea.classList.add('hidden');
 
       // QR Code
       const resultData = {
@@ -711,14 +732,16 @@
       calcBtn.textContent = '開始算命';
     }
 
+    // ===== 重新算命 =====
     resetBtn.addEventListener('click', () => {
       resultCard.classList.remove('show');
       document.getElementById('qrcode').innerHTML = '';
-      inputArea.style.display = '';
+      inputArea.classList.remove('hidden');
       statusText.textContent = '填寫完整出生資訊，召喚小桃';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // ===== 綁定事件 =====
     calcBtn.addEventListener('click', startDivination);
 
     window.addEventListener('load', () => {
