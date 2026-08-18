@@ -86,7 +86,6 @@
       padding-bottom: 12px;
     }
 
-    /* 輸入區 */
     .input-area {
       display: block;
       transition: opacity 0.3s;
@@ -175,7 +174,7 @@
       justify-content: center;
     }
 
-    /* ===== 結果區（清爽無卡片） ===== */
+    /* ===== 結果區（清爽排版） ===== */
     .result {
       display: none;
       margin-top: 4px;
@@ -189,7 +188,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* 稱號 */
     .result-nick {
       font-size: 13px;
       color: #b097a0;
@@ -204,29 +202,29 @@
       margin-bottom: 12px;
     }
 
-    /* 八字盤（簡潔一行） */
-    .bazi-row {
+    /* 八字命盤區塊（獨立且清晰） */
+    .bazi-block {
       background: #f8f4f6;
       border-radius: 10px;
-      padding: 10px 16px;
+      padding: 12px 16px;
       margin-bottom: 14px;
-      text-align: center;
       border: 1px solid #f0e8ea;
+      text-align: center;
     }
-    .bazi-row .bazi-label {
+    .bazi-block .bazi-label {
       font-size: 10px;
       color: #b097a0;
       letter-spacing: 2px;
     }
-    .bazi-row .bazi-text {
-      font-size: 20px;
+    .bazi-block .bazi-text {
+      font-size: 22px;
       font-weight: 600;
       color: #3a2c33;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
 
-    /* 人生故事（輕排版） */
+    /* 人生故事 */
     .story-text {
       font-size: 15px;
       color: #3a2c33;
@@ -301,7 +299,7 @@
       color: #c28a1a;
     }
 
-    /* 水晶推薦 */
+    /* 水晶推薦（以命盤為主） */
     .crystal-line {
       font-size: 15px;
       color: #2a3a4a;
@@ -318,7 +316,6 @@
       font-weight: 600;
     }
 
-    /* QR 區 */
     .qr-section {
       margin: 12px 0 8px;
       display: flex;
@@ -410,7 +407,6 @@
       background: #ffffff;
     }
 
-    /* ===== 手機版 ===== */
     @media (max-width: 768px) {
       body { padding: 12px; }
       .container { flex-direction: column; gap: 20px; }
@@ -422,7 +418,7 @@
       .input-row { flex-direction: column; gap: 0; }
       .result-title-big { font-size: 26px; text-align: center; }
       .result-nick { text-align: center; }
-      .bazi-row .bazi-text { font-size: 17px; letter-spacing: 3px; }
+      .bazi-block .bazi-text { font-size: 18px; letter-spacing: 4px; }
       .story-text { font-size: 14px; }
       .score-item .score-label { width: 48px; font-size: 13px; }
       .analysis-block .a-text { font-size: 13px; }
@@ -433,7 +429,7 @@
       .btn { font-size: 16px; padding: 12px; }
       .video-wrapper { max-width: 220px; }
       .result-title-big { font-size: 22px; }
-      .bazi-row .bazi-text { font-size: 15px; letter-spacing: 2px; }
+      .bazi-block .bazi-text { font-size: 16px; letter-spacing: 3px; }
       .story-text { font-size: 13px; }
       .score-item .score-label { width: 42px; font-size: 12px; }
       .score-item .score-num { font-size: 12px; width: 28px; }
@@ -525,14 +521,17 @@
 
       <!-- 結果區 -->
       <div class="result" id="resultCard">
+        <!-- 稱號 -->
         <div class="result-nick">✦ 你的江湖稱號 ✦</div>
         <div class="result-title-big" id="rTitle">—</div>
 
-        <div class="bazi-row">
+        <!-- 八字命盤（獨立區塊，清晰顯示） -->
+        <div class="bazi-block">
           <div class="bazi-label">📜 八字命盤</div>
           <div class="bazi-text" id="rBazi">—</div>
         </div>
 
+        <!-- 人生故事（非財經） -->
         <div class="story-text" id="rLifeStory">—</div>
 
         <!-- 運勢分數 -->
@@ -568,8 +567,9 @@
           <div class="a-text" id="rInvestmentAdvice">—</div>
         </div>
 
+        <!-- 水晶推薦（以命盤為主） -->
         <div class="crystal-line">
-          <div class="c-label">💎 推薦五行水晶</div>
+          <div class="c-label">💎 五行水晶推薦</div>
           <div id="rCrystal">—</div>
         </div>
 
@@ -678,7 +678,7 @@
           wealthAnalysis: '財運平穩，適合長期投資，房地產相關產業有機會。',
           careerAnalysis: '適合教育、文化創意產業，貴人運佳。',
           investmentAdvice: '建議投資指數型基金或房地產，避開高風險新創。',
-          crystal: '黃水晶，招財聚氣，穩定財庫。',
+          crystal: '黃水晶，綜合命格，招財聚氣，穩定整體能量。',
           bazi: { full: '甲子 丙寅 戊辰 庚午' }
         };
       }
@@ -694,7 +694,7 @@
       return json.id;
     }
 
-    function animateScore(bar, numEl, target, label) {
+    function animateScore(bar, numEl, target) {
       let current = 0;
       const step = Math.max(1, Math.floor(target / 20));
       const interval = setInterval(() => {
@@ -754,7 +754,6 @@
       rInvestmentAdvice.textContent = fortune.investmentAdvice || '建議穩健投資。';
       rCrystal.textContent = fortune.crystal || '粉晶，溫柔能量。';
 
-      // 分數動畫
       const w = Math.min(100, Math.max(0, fortune.wealthScore || 70));
       const c = Math.min(100, Math.max(0, fortune.careerScore || 70));
       const l = Math.min(100, Math.max(0, fortune.loveScore || 70));

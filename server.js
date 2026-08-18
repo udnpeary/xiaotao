@@ -111,7 +111,7 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
   }
 }
 
-// ===== 2. 算命 API（加入運勢分數、財經分析） =====
+// ===== 2. 算命 API（水晶推薦以命盤為主） =====
 app.post('/api/fortune', async (req, res) => {
   const { birthDate, birthTime, gender, calendar, birthplace } = req.body;
   if (!birthDate || !birthTime) {
@@ -140,14 +140,14 @@ app.post('/api/fortune', async (req, res) => {
 
 {
   "title": "一個有趣的江湖稱號（4~6字）",
-  "lifeStory": "人生故事（80~100字，幽默風趣，像在講角色設定）",
+  "lifeStory": "人生故事（80~100字，幽默風趣，獨立於財經，純粹描述命格與個性）",
   "wealthScore": 財運分數（1-100的數字）,
   "careerScore": 事業分數（1-100的數字）,
   "loveScore": 感情分數（1-100的數字）,
   "wealthAnalysis": "財運分析（40~50字，具體說明財運走勢、適合的投資方式）",
   "careerAnalysis": "事業分析（40~50字，具體說明適合的行業、職場建議）",
   "investmentAdvice": "投資方向建議（30~40字，具體到產業或資產類型）",
-  "crystal": "推薦一種五行水晶，說明原因（20字內）"
+  "crystal": "根據整體命盤推薦最適合的五行水晶，說明原因（20字內），不局限於財運，而是綜合命格"
 }
 `;
 
@@ -202,10 +202,10 @@ function getFallbackResult(birthDate) {
     wealthScore: 75,
     careerScore: 80,
     loveScore: 70,
-    wealthAnalysis: '財運平穩，適合長期投資，避免短線操作。房地產相關產業有機會。',
+    wealthAnalysis: '財運平穩，適合長期投資，房地產相關產業有機會。',
     careerAnalysis: '適合教育、文化創意產業，貴人運佳，中年後事業起飛。',
     investmentAdvice: '建議投資指數型基金或房地產，避開高風險新創。',
-    crystal: '黃水晶，招財聚氣，穩定財庫。',
+    crystal: '黃水晶，綜合命格，招財聚氣，穩定整體能量。',
     bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' }
   };
 }

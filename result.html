@@ -30,7 +30,7 @@
       background: linear-gradient(150deg, #ffffff, #f8f4f6);
       border-radius: 28px;
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.10);
-      padding: 24px 20px 18px;
+      padding: 28px 22px 20px;
       display: flex;
       flex-direction: column;
       border: 1px solid #f0e8ea;
@@ -64,13 +64,13 @@
     .card-header {
       text-align: center;
       border-bottom: 2px solid #fce4ec;
-      padding-bottom: 8px;
-      margin-bottom: 10px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
       position: relative;
       z-index: 1;
     }
     .card-header .brand {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
       color: #c94a7a;
       letter-spacing: 4px;
@@ -84,33 +84,33 @@
     .card-bazi {
       text-align: center;
       background: #f8f4f6;
-      border-radius: 8px;
-      padding: 6px 10px;
-      margin-bottom: 8px;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
       border: 1px solid #f0e8ea;
       position: relative;
       z-index: 1;
     }
     .card-bazi .label {
-      font-size: 9px;
+      font-size: 10px;
       color: #b097a0;
       letter-spacing: 2px;
     }
     .card-bazi .text {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
       color: #3a2c33;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
 
     .card-title {
       text-align: center;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: #c94a7a;
       letter-spacing: 2px;
-      margin-bottom: 6px;
+      margin-bottom: 12px;
       position: relative;
       z-index: 1;
     }
@@ -122,60 +122,48 @@
       display: block;
     }
 
-    .card-story {
-      font-size: 12px;
-      color: #3a2c33;
-      line-height: 1.6;
-      background: #fffafb;
-      border-radius: 8px;
-      padding: 8px 12px;
-      border-left: 3px solid #c94a7a;
-      margin-bottom: 8px;
-      flex: 1;
-      min-height: 52px;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-    }
-
+    /* 分數區 */
     .card-scores {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 8px;
+      margin-bottom: 14px;
       position: relative;
       z-index: 1;
+      flex: 1;
+      align-items: center;
     }
     .card-scores .s-item {
       text-align: center;
-      font-size: 11px;
-      color: #6a5a6a;
     }
     .card-scores .s-item .num {
-      font-size: 18px;
+      font-size: 28px;
       font-weight: 700;
       color: #c94a7a;
+      line-height: 1.2;
     }
     .card-scores .s-item .label {
-      font-size: 9px;
+      font-size: 11px;
       color: #b097a0;
-      display: block;
+      letter-spacing: 1px;
+      margin-top: 2px;
     }
 
     .card-crystal {
-      font-size: 12px;
+      font-size: 14px;
       color: #2a3a4a;
       background: #f0f4fa;
-      border-radius: 8px;
-      padding: 6px 12px;
-      border-left: 3px solid #6a8cba;
-      margin-bottom: 6px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      border-left: 4px solid #6a8cba;
+      margin-bottom: 8px;
       position: relative;
       z-index: 1;
     }
     .card-crystal .clabel {
-      font-size: 9px;
+      font-size: 10px;
       color: #6a7a8a;
       letter-spacing: 1px;
+      font-weight: 600;
     }
 
     .card-footer {
@@ -184,7 +172,7 @@
       color: #b097a0;
       letter-spacing: 2px;
       border-top: 1px solid #f3e8ea;
-      padding-top: 6px;
+      padding-top: 8px;
       margin-top: auto;
       position: relative;
       z-index: 1;
@@ -251,23 +239,18 @@
       #card {
         width: 100%;
         max-width: 340px;
-        padding: 18px 14px 14px;
+        padding: 20px 16px 16px;
         border-radius: 20px;
       }
       .card-bazi .text {
-        font-size: 14px;
-        letter-spacing: 2px;
+        font-size: 16px;
+        letter-spacing: 3px;
       }
       .card-title {
-        font-size: 18px;
-      }
-      .card-story {
-        font-size: 11px;
-        padding: 6px 10px;
-        min-height: 40px;
+        font-size: 20px;
       }
       .card-scores .s-item .num {
-        font-size: 16px;
+        font-size: 24px;
       }
       .btn-area {
         width: 100%;
@@ -278,10 +261,11 @@
 </head>
 <body>
 
+  <!-- 卡片 -->
   <div id="card">
     <div class="card-header">
       <div class="brand">✦ 小桃說好命 ✦</div>
-      <div class="sub">八字命盤・人生故事</div>
+      <div class="sub">八字命盤・運勢分數</div>
     </div>
 
     <div class="card-bazi">
@@ -294,22 +278,30 @@
       <span id="displayTitle">—</span>
     </div>
 
-    <div class="card-story" id="displayStory">—</div>
-
     <div class="card-scores">
-      <div class="s-item"><span class="num" id="displayWealth">—</span><span class="label">💰 財運</span></div>
-      <div class="s-item"><span class="num" id="displayCareer">—</span><span class="label">💼 事業</span></div>
-      <div class="s-item"><span class="num" id="displayLove">—</span><span class="label">❤️ 感情</span></div>
+      <div class="s-item">
+        <div class="num" id="displayWealth">—</div>
+        <div class="label">💰 財運</div>
+      </div>
+      <div class="s-item">
+        <div class="num" id="displayCareer">—</div>
+        <div class="label">💼 事業</div>
+      </div>
+      <div class="s-item">
+        <div class="num" id="displayLove">—</div>
+        <div class="label">❤️ 感情</div>
+      </div>
     </div>
 
     <div class="card-crystal">
-      <div class="clabel">💎 推薦水晶</div>
+      <div class="clabel">💎 適合水晶</div>
       <span id="displayCrystal">—</span>
     </div>
 
     <div class="card-footer">— 僅供參考 · 小桃說好命 —</div>
   </div>
 
+  <!-- 按鈕 -->
   <div class="btn-area">
     <button class="btn-download" id="downloadBtn" disabled>⬇ 下載命理小卡</button>
     <button class="btn-back" id="backBtn">← 返回首頁</button>
@@ -321,7 +313,6 @@
 
     const displayBazi = document.getElementById('displayBazi');
     const displayTitle = document.getElementById('displayTitle');
-    const displayStory = document.getElementById('displayStory');
     const displayWealth = document.getElementById('displayWealth');
     const displayCareer = document.getElementById('displayCareer');
     const displayLove = document.getElementById('displayLove');
@@ -342,12 +333,12 @@
         if (!res.ok) throw new Error('找不到結果');
         resultData = await res.json();
 
+        // 只顯示精簡欄位
         displayBazi.textContent = resultData.bazi?.full || '—';
         displayTitle.textContent = resultData.title || '無名俠客';
-        displayStory.textContent = resultData.lifeStory || '你是個獨特的人。';
-        displayWealth.textContent = resultData.wealthScore || '—';
-        displayCareer.textContent = resultData.careerScore || '—';
-        displayLove.textContent = resultData.loveScore || '—';
+        displayWealth.textContent = resultData.wealthScore ?? '—';
+        displayCareer.textContent = resultData.careerScore ?? '—';
+        displayLove.textContent = resultData.loveScore ?? '—';
         displayCrystal.textContent = resultData.crystal || '粉晶';
 
         downloadBtn.disabled = false;
