@@ -4,6 +4,7 @@ const cors = require('cors');
 const { OpenAI } = require('openai');
 const { execFileSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -23,10 +24,28 @@ const client = new OpenAI({
 
 const resultStore = {};
 
-// ===== 設定 fortune-skill 的路徑 =====
-const FORTUNE_SKILL_PATH = path.join(__dirname, '../fortune-skill');
+// ===== 自動尋找 fortune-skill 路徑 =====
+function findFortuneSkillPath() {
+  const possiblePaths = [
+    path.join(__dirname, '../fortune-skill'),           // 本地開發：與 xiaotao 同層
+    path.join(__dirname, 'fortune-skill'),              // Render 部署：在專案根目錄
+    path.join('/opt/render/project', 'fortune-skill'),  // Render 備用路徑
+  ];
 
-// ===== 1. 呼叫 fortune-skill 排盤 =====
+  for (const p of possiblePaths) {
+    const scriptPath = path.join(p, 'scripts/bazi-chart.mjs');
+    if (fs.existsSync(scriptPath)) {
+      console.log(`✅ 找到 fortune-skill: ${p}`);
+      return p;
+    }
+  }
+  console.warn('⚠️ 找不到 fortune-skill，將使用 lunar-javascript 備用排盤');
+  return null;
+}
+
+const FORTUNE_SKILL_PATH = findFortuneSkillPath();
+
+// ===== 1. 排盤函數（優先使用 fortune-skill，備用 lunar-javascript） =====
 function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台灣') {
   const [year, month, day] = birthDate.split('-').map(Number);
   const hourMatch = birthTime.match(/(\d{2}):/);
@@ -34,49 +53,69 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
   const minuteMatch = birthTime.match(/:(\d{2})/);
   const minute = minuteMatch ? parseInt(minuteMatch[1]) : 0;
 
-  console.log(`⏳ 正在使用 fortune-skill 排盤: ${birthDate} ${birthTime}`);
+  // ---- 方案 A：使用 fortune-skill（含真太陽時） ----
+  if (FORTUNE_SKILL_PATH) {
+    try {
+      console.log(`⏳ 正在使用 fortune-skill 排盤: ${birthDate} ${birthTime}`);
+      const scriptPath = path.join(FORTUNE_SKILL_PATH, 'scripts/bazi-chart.mjs');
+      const args = [
+        '--solar', `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+        '--hour', String(hour),
+        '--minute', String(minute),
+        '--gender', gender,
+        '--birthplace', birthplace
+      ];
 
+      console.log(`🔧 執行: node ${scriptPath} ${args.join(' ')}`);
+
+      const output = execFileSync('node', [scriptPath, ...args], {
+        encoding: 'utf-8',
+        timeout: 15000,
+        env: { ...process.env }
+      });
+
+      const result = JSON.parse(output);
+      const bazi = result.bazi || result;
+
+      return {
+        yearPillar: bazi.year || bazi.yearPillar || '',
+        monthPillar: bazi.month || bazi.monthPillar || '',
+        dayPillar: bazi.day || bazi.dayPillar || '',
+        hourPillar: bazi.hour || bazi.hourPillar || '',
+        fullBazi: `${bazi.year || ''} ${bazi.month || ''} ${bazi.day || ''} ${bazi.hour || ''}`.trim(),
+        raw: result,
+        source: 'fortune-skill'
+      };
+
+    } catch (error) {
+      console.error('fortune-skill 排盤失敗，改用備用方案:', error.message);
+      // 繼續執行備用方案
+    }
+  }
+
+  // ---- 方案 B：備用 lunar-javascript ----
   try {
-    const scriptPath = path.join(FORTUNE_SKILL_PATH, 'scripts/bazi-chart.mjs');
+    console.log(`⏳ 使用 lunar-javascript 備用排盤: ${birthDate} ${birthTime}`);
+    const { Lunar, Solar } = require('lunar-javascript');
+    const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+    const lunar = solar.getLunar();
 
-    // 構建參數：--solar YYYY-MM-DD --hour H --minute M --gender male/female --birthplace "城市名"
-    const args = [
-      '--solar', `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
-      '--hour', String(hour),
-      '--minute', String(minute),
-      '--gender', gender,
-      '--birthplace', birthplace
-    ];
-
-    console.log(`🔧 執行: node ${scriptPath} ${args.join(' ')}`);
-
-    // 使用 execFileSync 直接執行 node，不經 shell
-    const output = execFileSync('node', [scriptPath, ...args], {
-      encoding: 'utf-8',
-      timeout: 15000,
-      env: { ...process.env }
-    });
-
-    // 解析結果（假設輸出為 JSON）
-    const result = JSON.parse(output);
-
-    // 從 result 中提取八字數據
-    // 根據 fortune-skill 的輸出格式，它可能返回 { bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午' } }
-    // 或者直接返回四柱
-    const bazi = result.bazi || result;
+    const yearPillar = lunar.getYearInGanZhi();
+    const monthPillar = lunar.getMonthInGanZhi();
+    const dayPillar = lunar.getDayInGanZhi();
+    const hourPillar = lunar.getTimeInGanZhi();
 
     return {
-      yearPillar: bazi.year || bazi.yearPillar || '',
-      monthPillar: bazi.month || bazi.monthPillar || '',
-      dayPillar: bazi.day || bazi.dayPillar || '',
-      hourPillar: bazi.hour || bazi.hourPillar || '',
-      fullBazi: `${bazi.year || ''} ${bazi.month || ''} ${bazi.day || ''} ${bazi.hour || ''}`.trim(),
-      raw: result
+      yearPillar,
+      monthPillar,
+      dayPillar,
+      hourPillar,
+      fullBazi: `${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`,
+      source: 'lunar-javascript'
     };
 
   } catch (error) {
-    console.error('fortune-skill 排盤失敗：', error.message);
-    if (error.stderr) console.error('stderr:', error.stderr.toString());
+    console.error('所有排盤方案都失敗:', error.message);
     return null;
   }
 }
@@ -89,13 +128,12 @@ app.post('/api/fortune', async (req, res) => {
   }
 
   try {
-    // 注意：fortune-skill 預設為公曆，若用戶選農曆需另行處理，但目前我們只支援公曆
     const baziData = getBaziChart(birthDate, birthTime, gender, birthplace || '台灣');
     if (!baziData) {
       return res.json(getFallbackResult(birthDate));
     }
 
-    console.log('✅ 排盤成功，準備讓 DeepSeek 分析');
+    console.log(`✅ 排盤成功 (來源: ${baziData.source})`);
 
     const systemPrompt = `
 你是一個幽默風趣的算命老師，代號「小桃魔女」。說話像一個老朋友，帶著一點搞笑和溫暖。
@@ -106,7 +144,6 @@ app.post('/api/fortune', async (req, res) => {
 月柱：${baziData.monthPillar}
 日柱：${baziData.dayPillar}
 時柱：${baziData.hourPillar}
-日主：${baziData.dayPillar ? baziData.dayPillar.charAt(0) : '未知'}
 
 請根據這份命盤，**用說故事的方式**描述這個人的命格，像是幫他寫一段「人生角色設定」。
 要幽默、有趣、有畫面感，讓人覺得「哇，好準！」但不要太嚴肅或過度玄學。
@@ -142,8 +179,7 @@ app.post('/api/fortune', async (req, res) => {
         day: baziData.dayPillar,
         hour: baziData.hourPillar,
         full: baziData.fullBazi
-      },
-      dayMaster: baziData.dayPillar ? baziData.dayPillar.charAt(0) : '未知'
+      }
     };
 
     res.json(finalResult);
@@ -153,7 +189,7 @@ app.post('/api/fortune', async (req, res) => {
   }
 });
 
-// ===== 備用方案（與之前相同） =====
+// ===== 備用方案 =====
 function getFallbackResult(birthDate) {
   const [year, month, day] = birthDate.split('-').map(Number);
   const total = year + month + day;
@@ -172,8 +208,7 @@ function getFallbackResult(birthDate) {
     title: titleMap[index],
     lifeStory: storyMap[index],
     crystal: crystalMap[index] + '，能幫你平衡能量，發揮你的天賦',
-    bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' },
-    dayMaster: '甲'
+    bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' }
   };
 }
 
@@ -199,5 +234,5 @@ app.get('/api/result/:id', (req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ 小桃魔女啟動，運行在端口 ${port}`);
-  console.log(`📁 fortune-skill 路徑: ${FORTUNE_SKILL_PATH}`);
+  console.log(`📁 fortune-skill 狀態: ${FORTUNE_SKILL_PATH ? '✅ 已找到' : '❌ 未找到（使用備用排盤）'}`);
 });
