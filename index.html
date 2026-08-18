@@ -174,7 +174,7 @@
       justify-content: center;
     }
 
-    /* ===== 結果區（清爽排版） ===== */
+    /* ===== 結果區 ===== */
     .result {
       display: none;
       margin-top: 4px;
@@ -202,7 +202,7 @@
       margin-bottom: 12px;
     }
 
-    /* 八字命盤區塊（獨立且清晰） */
+    /* 八字命盤：四柱分開 */
     .bazi-block {
       background: #f8f4f6;
       border-radius: 10px;
@@ -215,16 +215,29 @@
       font-size: 10px;
       color: #b097a0;
       letter-spacing: 2px;
+      margin-bottom: 6px;
     }
-    .bazi-block .bazi-text {
-      font-size: 22px;
-      font-weight: 600;
+    .bazi-block .pillars {
+      display: flex;
+      justify-content: space-around;
+      gap: 4px;
+    }
+    .bazi-block .pillar-item {
+      text-align: center;
+    }
+    .bazi-block .pillar-item .p-label {
+      font-size: 9px;
+      color: #b097a0;
+      letter-spacing: 1px;
+    }
+    .bazi-block .pillar-item .p-value {
+      font-size: 20px;
+      font-weight: 700;
       color: #3a2c33;
-      letter-spacing: 5px;
+      letter-spacing: 1px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
 
-    /* 人生故事 */
     .story-text {
       font-size: 15px;
       color: #3a2c33;
@@ -233,7 +246,6 @@
       padding: 0 4px;
     }
 
-    /* 運勢分數條 */
     .score-section {
       margin-bottom: 14px;
     }
@@ -272,7 +284,6 @@
       flex-shrink: 0;
     }
 
-    /* 財經分析區 */
     .analysis-block {
       margin-bottom: 12px;
       padding: 10px 12px;
@@ -299,7 +310,6 @@
       color: #c28a1a;
     }
 
-    /* 水晶推薦（以命盤為主） */
     .crystal-line {
       font-size: 15px;
       color: #2a3a4a;
@@ -418,7 +428,7 @@
       .input-row { flex-direction: column; gap: 0; }
       .result-title-big { font-size: 26px; text-align: center; }
       .result-nick { text-align: center; }
-      .bazi-block .bazi-text { font-size: 18px; letter-spacing: 4px; }
+      .bazi-block .pillar-item .p-value { font-size: 17px; }
       .story-text { font-size: 14px; }
       .score-item .score-label { width: 48px; font-size: 13px; }
       .analysis-block .a-text { font-size: 13px; }
@@ -429,7 +439,7 @@
       .btn { font-size: 16px; padding: 12px; }
       .video-wrapper { max-width: 220px; }
       .result-title-big { font-size: 22px; }
-      .bazi-block .bazi-text { font-size: 16px; letter-spacing: 3px; }
+      .bazi-block .pillar-item .p-value { font-size: 15px; }
       .story-text { font-size: 13px; }
       .score-item .score-label { width: 42px; font-size: 12px; }
       .score-item .score-num { font-size: 12px; width: 28px; }
@@ -521,17 +531,32 @@
 
       <!-- 結果區 -->
       <div class="result" id="resultCard">
-        <!-- 稱號 -->
         <div class="result-nick">✦ 你的江湖稱號 ✦</div>
         <div class="result-title-big" id="rTitle">—</div>
 
-        <!-- 八字命盤（獨立區塊，清晰顯示） -->
+        <!-- 八字命盤：四柱分開 -->
         <div class="bazi-block">
           <div class="bazi-label">📜 八字命盤</div>
-          <div class="bazi-text" id="rBazi">—</div>
+          <div class="pillars">
+            <div class="pillar-item">
+              <div class="p-label">年柱</div>
+              <div class="p-value" id="rYear">—</div>
+            </div>
+            <div class="pillar-item">
+              <div class="p-label">月柱</div>
+              <div class="p-value" id="rMonth">—</div>
+            </div>
+            <div class="pillar-item">
+              <div class="p-label">日柱</div>
+              <div class="p-value" id="rDay">—</div>
+            </div>
+            <div class="pillar-item">
+              <div class="p-label">時柱</div>
+              <div class="p-value" id="rHour">—</div>
+            </div>
+          </div>
         </div>
 
-        <!-- 人生故事（非財經） -->
         <div class="story-text" id="rLifeStory">—</div>
 
         <!-- 運勢分數 -->
@@ -567,7 +592,7 @@
           <div class="a-text" id="rInvestmentAdvice">—</div>
         </div>
 
-        <!-- 水晶推薦（以命盤為主） -->
+        <!-- 水晶推薦 -->
         <div class="crystal-line">
           <div class="c-label">💎 五行水晶推薦</div>
           <div id="rCrystal">—</div>
@@ -601,7 +626,10 @@
     const inputArea = document.getElementById('inputArea');
 
     const rTitle = document.getElementById('rTitle');
-    const rBazi = document.getElementById('rBazi');
+    const rYear = document.getElementById('rYear');
+    const rMonth = document.getElementById('rMonth');
+    const rDay = document.getElementById('rDay');
+    const rHour = document.getElementById('rHour');
     const rLifeStory = document.getElementById('rLifeStory');
     const rWealthAnalysis = document.getElementById('rWealthAnalysis');
     const rCareerAnalysis = document.getElementById('rCareerAnalysis');
@@ -679,7 +707,7 @@
           careerAnalysis: '適合教育、文化創意產業，貴人運佳。',
           investmentAdvice: '建議投資指數型基金或房地產，避開高風險新創。',
           crystal: '黃水晶，綜合命格，招財聚氣，穩定整體能量。',
-          bazi: { full: '甲子 丙寅 戊辰 庚午' }
+          bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午' }
         };
       }
     }
@@ -747,7 +775,14 @@
 
       // 填入結果
       rTitle.textContent = fortune.title || '無名俠客';
-      rBazi.textContent = fortune.bazi?.full || '—';
+
+      // 填入四柱（分開）
+      const b = fortune.bazi || {};
+      rYear.textContent = b.year || '—';
+      rMonth.textContent = b.month || '—';
+      rDay.textContent = b.day || '—';
+      rHour.textContent = b.hour || '—';
+
       rLifeStory.textContent = fortune.lifeStory || '你是個獨特的人。';
       rWealthAnalysis.textContent = fortune.wealthAnalysis || '財運平穩發展。';
       rCareerAnalysis.textContent = fortune.careerAnalysis || '事業漸入佳境。';
@@ -765,9 +800,16 @@
       statusText.textContent = '✨ 命盤解析完成！';
       inputArea.classList.add('hidden');
 
+      // 儲存結果（包含完整四柱）
       const resultData = {
         title: fortune.title,
-        bazi: fortune.bazi,
+        bazi: {
+          year: b.year || '',
+          month: b.month || '',
+          day: b.day || '',
+          hour: b.hour || '',
+          full: `${b.year || ''} ${b.month || ''} ${b.day || ''} ${b.hour || ''}`.trim()
+        },
         lifeStory: fortune.lifeStory,
         wealthScore: w,
         careerScore: c,

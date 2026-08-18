@@ -52,6 +52,7 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
   const minuteMatch = birthTime.match(/:(\d{2})/);
   const minute = minuteMatch ? parseInt(minuteMatch[1]) : 0;
 
+  // ---- 方案 A：fortune-skill（含真太陽時） ----
   if (FORTUNE_SKILL_PATH) {
     try {
       console.log(`⏳ 正在使用 fortune-skill 排盤: ${birthDate} ${birthTime}`);
@@ -72,37 +73,49 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
       });
 
       const result = JSON.parse(output);
-      const bazi = result.bazi || result;
+      console.log(`📄 fortune-skill 原始回傳: 成功 (含 pillars 數據)`);
+
+      // 從 pillars 提取四柱（正確路徑：result.pillars.year.ganZhi）
+      const pillars = result.pillars || {};
+      const yearPillar = pillars.year?.ganZhi || '';
+      const monthPillar = pillars.month?.ganZhi || '';
+      const dayPillar = pillars.day?.ganZhi || '';
+      const hourPillar = pillars.time?.ganZhi || '';
+
+      console.log(`📊 提取四柱: ${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`);
+
       return {
-        yearPillar: bazi.year || bazi.yearPillar || '',
-        monthPillar: bazi.month || bazi.monthPillar || '',
-        dayPillar: bazi.day || bazi.dayPillar || '',
-        hourPillar: bazi.hour || bazi.hourPillar || '',
-        fullBazi: `${bazi.year || ''} ${bazi.month || ''} ${bazi.day || ''} ${bazi.hour || ''}`.trim(),
+        yearPillar,
+        monthPillar,
+        dayPillar,
+        hourPillar,
+        fullBazi: `${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`.trim(),
         source: 'fortune-skill'
       };
     } catch (error) {
-      console.error('fortune-skill 排盤失敗，改用備用方案:', error.message);
+      console.error('fortune-skill 排盤失敗:', error.message);
+      if (error.stderr) console.error('stderr:', error.stderr.toString());
     }
   }
 
+  // ---- 方案 B：lunar-javascript 備用 ----
   try {
     console.log(`⏳ 使用 lunar-javascript 備用排盤: ${birthDate} ${birthTime}`);
     const { Lunar, Solar } = require('lunar-javascript');
     const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
     const lunar = solar.getLunar();
 
-    const yearPillar = lunar.getYearInGanZhi();
-    const monthPillar = lunar.getMonthInGanZhi();
-    const dayPillar = lunar.getDayInGanZhi();
-    const hourPillar = lunar.getTimeInGanZhi();
+    const y = lunar.getYearInGanZhi();
+    const m = lunar.getMonthInGanZhi();
+    const d = lunar.getDayInGanZhi();
+    const h = lunar.getTimeInGanZhi();
 
     return {
-      yearPillar,
-      monthPillar,
-      dayPillar,
-      hourPillar,
-      fullBazi: `${yearPillar} ${monthPillar} ${dayPillar} ${hourPillar}`,
+      yearPillar: y,
+      monthPillar: m,
+      dayPillar: d,
+      hourPillar: h,
+      fullBazi: `${y} ${m} ${d} ${h}`,
       source: 'lunar-javascript'
     };
   } catch (error) {
@@ -111,7 +124,7 @@ function getBaziChart(birthDate, birthTime, gender = 'male', birthplace = '台�
   }
 }
 
-// ===== 2. 算命 API（水晶推薦以命盤為主） =====
+// ===== 2. 算命 API =====
 app.post('/api/fortune', async (req, res) => {
   const { birthDate, birthTime, gender, calendar, birthplace } = req.body;
   if (!birthDate || !birthTime) {
@@ -125,6 +138,7 @@ app.post('/api/fortune', async (req, res) => {
     }
 
     console.log(`✅ 排盤成功 (來源: ${baziData.source})`);
+    console.log(`📊 最終四柱: ${baziData.yearPillar} ${baziData.monthPillar} ${baziData.dayPillar} ${baziData.hourPillar}`);
 
     const systemPrompt = `
 你是一個幽默風趣的算命老師，代號「小桃魔女」，同時也是一位財經博主「小桃說財經」。
@@ -175,6 +189,8 @@ app.post('/api/fortune', async (req, res) => {
       }
     };
 
+    console.log(`📤 回傳 bazi: ${JSON.stringify(finalResult.bazi)}`);
+
     res.json(finalResult);
   } catch (error) {
     console.error('解盤失敗：', error);
@@ -195,6 +211,7 @@ function getFallbackResult(birthDate) {
     '你像秋天的風，清爽銳利，做事果斷乾脆。但有時候會不小心傷到旁邊的人。',
     '你像冬天的河，表面平靜，底下藏著很多故事。想太多會忘記行動。'
   ];
+  const crystalMap = ['綠松石', '紅瑪瑙', '黃水晶', '白水晶', '黑曜石'];
 
   return {
     title: titleMap[index],
@@ -205,8 +222,14 @@ function getFallbackResult(birthDate) {
     wealthAnalysis: '財運平穩，適合長期投資，房地產相關產業有機會。',
     careerAnalysis: '適合教育、文化創意產業，貴人運佳，中年後事業起飛。',
     investmentAdvice: '建議投資指數型基金或房地產，避開高風險新創。',
-    crystal: '黃水晶，綜合命格，招財聚氣，穩定整體能量。',
-    bazi: { year: '甲子', month: '丙寅', day: '戊辰', hour: '庚午', full: '甲子 丙寅 戊辰 庚午' }
+    crystal: crystalMap[index] + '，綜合命格，穩定能量。',
+    bazi: {
+      year: '甲子',
+      month: '丙寅',
+      day: '戊辰',
+      hour: '庚午',
+      full: '甲子 丙寅 戊辰 庚午'
+    }
   };
 }
 
