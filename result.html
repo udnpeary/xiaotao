@@ -80,7 +80,6 @@
       letter-spacing: 2px;
     }
 
-    /* 八字四柱 - 分開顯示 */
     .card-bazi {
       text-align: center;
       background: #f8f4f6;
@@ -191,6 +190,7 @@
       z-index: 1;
     }
 
+    /* 只保留下載按鈕 */
     .btn-area {
       margin-top: 16px;
       display: flex;
@@ -217,21 +217,6 @@
     .btn-download:disabled {
       opacity: 0.5;
       pointer-events: none;
-    }
-    .btn-back {
-      background: #86868b;
-      border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: 500;
-      color: #ffffff;
-      cursor: pointer;
-      transition: background 0.2s;
-      letter-spacing: 1px;
-    }
-    .btn-back:hover {
-      background: #6e6e73;
     }
 
     .loading {
@@ -278,7 +263,7 @@
       <div class="sub">八字命盤・運勢分數</div>
     </div>
 
-    <!-- 八字四柱：分開顯示 -->
+    <!-- 八字四柱 -->
     <div class="card-bazi">
       <div class="label">📜 八字命盤</div>
       <div class="pillars">
@@ -329,9 +314,9 @@
     <div class="card-footer">— 僅供參考 · 小桃說好命 —</div>
   </div>
 
+  <!-- 按鈕區：只留「下載命理小卡」 -->
   <div class="btn-area">
     <button class="btn-download" id="downloadBtn" disabled>⬇ 下載命理小卡</button>
-    <button class="btn-back" id="backBtn">← 返回首頁</button>
   </div>
 
   <script>
@@ -348,7 +333,6 @@
     const displayLove = document.getElementById('displayLove');
     const displayCrystal = document.getElementById('displayCrystal');
     const downloadBtn = document.getElementById('downloadBtn');
-    const backBtn = document.getElementById('backBtn');
 
     let resultData = null;
 
@@ -363,7 +347,6 @@
         if (!res.ok) throw new Error('找不到結果');
         resultData = await res.json();
 
-        // 顯示完整四柱（分開）
         const b = resultData.bazi || {};
         displayYear.textContent = b.year || '—';
         displayMonth.textContent = b.month || '—';
@@ -409,7 +392,6 @@
       downloadBtn.textContent = '⬇ 下載命理小卡';
     }
 
-    backBtn.addEventListener('click', () => { window.location.href = '/'; });
     downloadBtn.addEventListener('click', downloadCard);
 
     loadResult();
