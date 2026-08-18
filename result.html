@@ -23,7 +23,6 @@
       padding: 16px;
     }
 
-    /* ===== 3:4 精簡卡片 ===== */
     #card {
       width: 340px;
       aspect-ratio: 3 / 4;
@@ -81,11 +80,12 @@
       letter-spacing: 2px;
     }
 
+    /* 八字四柱 - 分開顯示 */
     .card-bazi {
       text-align: center;
       background: #f8f4f6;
       border-radius: 10px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       margin-bottom: 12px;
       border: 1px solid #f0e8ea;
       position: relative;
@@ -95,12 +95,26 @@
       font-size: 10px;
       color: #b097a0;
       letter-spacing: 2px;
+      margin-bottom: 4px;
     }
-    .card-bazi .text {
+    .card-bazi .pillars {
+      display: flex;
+      justify-content: space-around;
+      gap: 4px;
+    }
+    .card-bazi .pillar-item {
+      text-align: center;
+    }
+    .card-bazi .pillar-item .p-label {
+      font-size: 9px;
+      color: #b097a0;
+      letter-spacing: 1px;
+    }
+    .card-bazi .pillar-item .p-value {
       font-size: 18px;
-      font-weight: 600;
+      font-weight: 700;
       color: #3a2c33;
-      letter-spacing: 4px;
+      letter-spacing: 1px;
       font-family: 'PingFang TC', 'Helvetica Neue', sans-serif;
     }
 
@@ -122,7 +136,6 @@
       display: block;
     }
 
-    /* 分數區 */
     .card-scores {
       display: flex;
       justify-content: space-around;
@@ -178,7 +191,6 @@
       z-index: 1;
     }
 
-    /* ===== 按鈕區 ===== */
     .btn-area {
       margin-top: 16px;
       display: flex;
@@ -242,9 +254,8 @@
         padding: 20px 16px 16px;
         border-radius: 20px;
       }
-      .card-bazi .text {
+      .card-bazi .pillar-item .p-value {
         font-size: 16px;
-        letter-spacing: 3px;
       }
       .card-title {
         font-size: 20px;
@@ -261,16 +272,33 @@
 </head>
 <body>
 
-  <!-- 卡片 -->
   <div id="card">
     <div class="card-header">
       <div class="brand">✦ 小桃說好命 ✦</div>
       <div class="sub">八字命盤・運勢分數</div>
     </div>
 
+    <!-- 八字四柱：分開顯示 -->
     <div class="card-bazi">
       <div class="label">📜 八字命盤</div>
-      <div class="text" id="displayBazi">—</div>
+      <div class="pillars">
+        <div class="pillar-item">
+          <div class="p-label">年柱</div>
+          <div class="p-value" id="displayYear">—</div>
+        </div>
+        <div class="pillar-item">
+          <div class="p-label">月柱</div>
+          <div class="p-value" id="displayMonth">—</div>
+        </div>
+        <div class="pillar-item">
+          <div class="p-label">日柱</div>
+          <div class="p-value" id="displayDay">—</div>
+        </div>
+        <div class="pillar-item">
+          <div class="p-label">時柱</div>
+          <div class="p-value" id="displayHour">—</div>
+        </div>
+      </div>
     </div>
 
     <div class="card-title">
@@ -301,7 +329,6 @@
     <div class="card-footer">— 僅供參考 · 小桃說好命 —</div>
   </div>
 
-  <!-- 按鈕 -->
   <div class="btn-area">
     <button class="btn-download" id="downloadBtn" disabled>⬇ 下載命理小卡</button>
     <button class="btn-back" id="backBtn">← 返回首頁</button>
@@ -311,7 +338,10 @@
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
-    const displayBazi = document.getElementById('displayBazi');
+    const displayYear = document.getElementById('displayYear');
+    const displayMonth = document.getElementById('displayMonth');
+    const displayDay = document.getElementById('displayDay');
+    const displayHour = document.getElementById('displayHour');
     const displayTitle = document.getElementById('displayTitle');
     const displayWealth = document.getElementById('displayWealth');
     const displayCareer = document.getElementById('displayCareer');
@@ -333,8 +363,13 @@
         if (!res.ok) throw new Error('找不到結果');
         resultData = await res.json();
 
-        // 只顯示精簡欄位
-        displayBazi.textContent = resultData.bazi?.full || '—';
+        // 顯示完整四柱（分開）
+        const b = resultData.bazi || {};
+        displayYear.textContent = b.year || '—';
+        displayMonth.textContent = b.month || '—';
+        displayDay.textContent = b.day || '—';
+        displayHour.textContent = b.hour || '—';
+
         displayTitle.textContent = resultData.title || '無名俠客';
         displayWealth.textContent = resultData.wealthScore ?? '—';
         displayCareer.textContent = resultData.careerScore ?? '—';
